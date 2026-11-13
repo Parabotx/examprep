@@ -13,6 +13,7 @@ import {
   Layers3,
   LockKeyhole,
   Play,
+  Palette,
   RotateCcw,
   ShieldCheck,
   Sparkles,
@@ -38,7 +39,21 @@ type SessionState = {
   scope: StudyScope;
   questions: QuizQuestion[];
   count: number;
+  focusTopics?: string[];
 };
+
+type TopicPerformance = {
+  topic: string;
+  missed: number;
+  total: number;
+};
+
+const readingTones = [
+  { id: "paper", label: "Warm paper", swatch: "#faf7ef" },
+  { id: "mist", label: "Cool mist", swatch: "#f0f5f8" },
+  { id: "lilac", label: "Soft lilac", swatch: "#f4f1fb" },
+  { id: "sage", label: "Quiet sage", swatch: "#f0f5ef" },
+] as const;
 
 const questionCounts = [15, 30, 50, 100] as const;
 const chapterOptions: { id: StudyScope; eyebrow: string; title: string; description: string; icon: typeof BookOpen }[] = [
@@ -175,6 +190,30 @@ function randomQuestions(bank: QuizQuestion[], count: number): QuizQuestion[] {
     });
 }
 
+const keyTermPattern = /(confidentiality|integrity|availability|authentication|authorization|non-repudiation|least privilege|threat|vulnerability|reconnaissance|denial of service|passive attack|active attack|buffer overflow|incomplete mediation|TOCTTOU|race condition|logic bomb|ransomware|malicious code|man-in-the-middle|traffic analysis|encryption|firewall|intrusion detection system|modularity|encapsulation|data hiding|separation of duties|virus|worm|Trojan horse|spyware|smurf attack|SYN flood|port redirection|packet sniffing|ping sweep|port scan)/gi;
+const keyTermLookup = new Set([
+  "confidentiality", "integrity", "availability", "authentication", "authorization",
+  "non-repudiation", "least privilege", "threat", "vulnerability", "reconnaissance",
+  "denial of service", "passive attack", "active attack", "buffer overflow",
+  "incomplete mediation", "tocttou", "race condition", "logic bomb", "ransomware",
+  "malicious code", "man-in-the-middle", "traffic analysis", "encryption", "firewall",
+  "intrusion detection system", "modularity", "encapsulation", "data hiding",
+  "separation of duties", "virus", "worm", "trojan horse", "spyware", "smurf attack",
+  "syn flood", "port redirection", "packet sniffing", "ping sweep", "port scan",
+]);
+
+function HighlightedText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(keyTermPattern).map((part, index) =>
+        keyTermLookup.has(part.toLowerCase())
+          ? <mark className="study-inline-highlight" key={index}><strong><u>{part}</u></strong></mark>
+          : <span key={index}>{part}</span>
+      )}
+    </>
+  );
+}
+
 function EmptyState({
   icon,
   title,
@@ -300,25 +339,25 @@ function StudyNotesView({ chapters }: { chapters: ChapterLearningContent[] }) {
                   <span className="topic-number">{String(index + 1).padStart(2, "0")}</span>
                   <span className="topic-title-wrap">
                     <strong>{topic.title}</strong>
-                    <small>{topic.overview}</small>
+                    <small><HighlightedText text={topic.overview} /></small>
                   </span>
                   <ChevronDown size={18} className="topic-chevron" />
                 </summary>
                 <div className="topic-details">
-                  <p className="topic-overview">{topic.overview}</p>
+                  <p className="topic-overview"><HighlightedText text={topic.overview} /></p>
                   <ul>
-                    {topic.keyPoints.map((point) => <li key={point}>{point}</li>)}
+                    {topic.keyPoints.map((point) => <li key={point}><HighlightedText text={point} /></li>)}
                   </ul>
                   {topic.example && (
                     <div className="topic-example">
                       <span>EXAMPLE</span>
-                      <p>{topic.example}</p>
+                      <p className="handwritten-example"><HighlightedText text={topic.example} /></p>
                     </div>
                   )}
                   {topic.examFocus && (
                     <div className="topic-exam-focus">
                       <Sparkles size={15} />
-                      <p><strong>Exam focus:</strong> {topic.examFocus}</p>
+                      <p className="handwritten-focus"><strong>Exam focus:</strong> <HighlightedText text={topic.examFocus} /></p>
                     </div>
                   )}
                 </div>
@@ -345,9 +384,9 @@ function ShortNotesView({ chapters }: { chapters: ChapterLearningContent[] }) {
               <article className="short-note-card" key={topic.title}>
                 <div className="short-note-number">{String(index + 1).padStart(2, "0")}</div>
                 <h3>{topic.title}</h3>
-                <p>{topic.overview}</p>
+                <p><HighlightedText text={topic.overview} /></p>
                 {topic.keyPoints.length > 0 && (
-                  <ul>{topic.keyPoints.map((point) => <li key={point}>{point}</li>)}</ul>
+                  <ul>{topic.keyPoints.map((point) => <li key={point}><HighlightedText text={point} /></li>)}</ul>
                 )}
               </article>
             ))}
@@ -516,10 +555,12 @@ function AssessmentSession({
   session,
   onRetake,
   onExit,
+  onPracticeTopics,
 }: {
   session: SessionState;
   onRetake: () => void;
   onExit: () => void;
+  onPracticeTopics: (topics: string[]) => void;
 }) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
@@ -531,6 +572,19 @@ function AssessmentSession({
     0,
   );
   const percentage = Math.round((score / session.questions.length) * 100);
+  const topicPerformance = useMemo(() => {
+    const performance = new Map<string, TopicPerformance>();
+    session.questions.forEach((question, index) => {
+      const topic = question.topic || "General review";
+      const entry = performance.get(topic) ?? { topic, missed: 0, total: 0 };
+      entry.total += 1;
+      if (answers[index] !== question.answerIndex) entry.missed += 1;
+      performance.set(topic, entry);
+    });
+    return [...performance.values()]
+      .filter((entry) => entry.missed > 0)
+      .sort((a, b) => (b.missed / b.total) - (a.missed / a.total) || b.missed - a.missed);
+  }, [answers, session.questions]);
 
   const selectAnswer = (optionIndex: number) => {
     if (currentAnswer !== -1) return;
@@ -565,6 +619,47 @@ function AssessmentSession({
             <button className="secondary-action-button" onClick={onExit}>Back to course</button>
           </div>
         </div>
+        {topicPerformance.length > 0 ? (
+          <section className="weak-topic-diagnosis">
+            <div className="weak-topic-heading">
+              <div>
+                <span className="eyebrow">YOUR PERSONAL REVISION PLAN</span>
+                <h3>Let's strengthen the parts you missed.</h3>
+                <p>We grouped your incorrect answers by lecture topic. Choose one area or practise all your weak topics together.</p>
+              </div>
+              <button
+                className="primary-action-button"
+                onClick={() => onPracticeTopics(topicPerformance.map((item) => item.topic))}
+              >
+                <Target size={15} /> Practice weak topics
+              </button>
+            </div>
+            <div className="weak-topic-list">
+              {topicPerformance.map((item) => (
+                <article className="weak-topic-item" key={item.topic}>
+                  <div className="weak-topic-copy">
+                    <strong>{item.topic}</strong>
+                    <span>{item.missed} missed out of {item.total} questions in this topic</span>
+                  </div>
+                  <div className="weak-topic-meter" aria-label={`${item.missed} of ${item.total} missed`}>
+                    <span style={{ width: `${(item.missed / item.total) * 100}%` }} />
+                  </div>
+                  <button
+                    className="weak-topic-action"
+                    onClick={() => onPracticeTopics([item.topic])}
+                  >
+                    Focus here <ArrowRight size={13} />
+                  </button>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <div className="all-topics-mastered">
+            <CheckCircle2 size={18} />
+            <span>You answered every question correctly. Excellent work.</span>
+          </div>
+        )}
         <div className="answer-review-heading">
           <div><span className="eyebrow">ANSWER REVIEW</span><h3>Learn from every question</h3></div>
           <span>{score} correct · {session.questions.length - score} to review</span>
@@ -576,7 +671,7 @@ function AssessmentSession({
               <article className={`answer-review-card ${isCorrect ? "correct" : "incorrect"}`} key={question.id}>
                 <div className="answer-review-status">{isCorrect ? <CheckCircle2 size={16} /> : <span>!</span>}</div>
                 <div>
-                  <small>QUESTION {index + 1}</small>
+                  <small>QUESTION {index + 1} · {question.topic}</small>
                   <h4>{question.question}</h4>
                   <p><strong>Your answer:</strong> {answers[index] >= 0 ? question.options[answers[index]] : "Not answered"}</p>
                   {!isCorrect && <p><strong>Correct answer:</strong> {question.options[question.answerIndex]}</p>}
@@ -752,18 +847,43 @@ function ChapterWorkspace({
   setSession: (session: SessionState | null) => void;
 }) {
   const chapterGroups = useMemo(() => chaptersFor(scope), [scope]);
+  const [readingToneIndex, setReadingToneIndex] = useState(0);
   const isCombined = scope === "combined";
+  const activeReadingTone = readingTones[readingToneIndex];
   const chapterName = scope === "chapter1" ? "Chapter 1 · Introduction" : scope === "chapter2" ? "Chapter 2 · Computer Threat" : "Combined study";
 
-  const begin = (mode: AssessmentMode, selectedScope: StudyScope, count: number) => {
-    const bank = quizBankFor(selectedScope);
+  const begin = (
+    mode: AssessmentMode,
+    selectedScope: StudyScope,
+    count: number,
+    focusTopics?: string[],
+  ) => {
+    const completeBank = quizBankFor(selectedScope);
+    const bank = focusTopics?.length
+      ? completeBank.filter((question) => focusTopics.includes(question.topic))
+      : completeBank;
     const questions = randomQuestions(bank, count);
-    setSession({ mode, scope: selectedScope, questions, count: questions.length });
+    setSession({
+      mode,
+      scope: selectedScope,
+      questions,
+      count: questions.length,
+      focusTopics,
+    });
   };
 
   const retake = () => {
     if (!session) return;
-    begin(session.mode, session.scope, session.count);
+    begin(session.mode, session.scope, session.count, session.focusTopics);
+  };
+
+  const practiceWeakTopics = (topics: string[]) => {
+    if (!session) return;
+    const topicBank = quizBankFor(session.scope).filter((question) => topics.includes(question.topic));
+    if (topicBank.length === 0) return;
+    const targetCount = Math.min(session.count, topicBank.length);
+    begin("quiz", session.scope, targetCount, topics);
+    setActiveTab("quizzes");
   };
 
   return (
@@ -813,14 +933,35 @@ function ChapterWorkspace({
         })}
       </nav>
 
-      <div className="ias-tab-content">
+      <div className={`ias-tab-content reading-surface tone-${activeReadingTone.id}`}>
+        <div className="reading-style-toolbar">
+          <div>
+            <span className="eyebrow">READING CANVAS</span>
+            <small>{activeReadingTone.label} · choose a softer page background</small>
+          </div>
+          <div className="reading-tone-choices" aria-label="Reading background">
+            {readingTones.map((tone, index) => (
+              <button
+                key={tone.id}
+                className={`reading-tone-choice ${index === readingToneIndex ? "active" : ""}`}
+                onClick={() => setReadingToneIndex(index)}
+                title={tone.label}
+                aria-label={`Use ${tone.label} reading background`}
+                aria-pressed={index === readingToneIndex}
+              >
+                <span style={{ background: tone.swatch }} />
+                <small>{tone.label}</small>
+              </button>
+            ))}
+          </div>
+        </div>
         {activeTab === "study-notes" && <StudyNotesView chapters={chapterGroups} />}
         {activeTab === "short-notes" && <ShortNotesView chapters={chapterGroups} />}
         {activeTab === "summary" && <SummaryView chapters={chapterGroups} />}
         {activeTab === "interactive" && <InteractiveStudyView chapters={chapterGroups} />}
         {activeTab === "quizzes" && (
           session ? (
-            <AssessmentSession session={session} onRetake={retake} onExit={() => setSession(null)} />
+            <AssessmentSession session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
           ) : (
             <AssessmentSetup
               mode="quiz"
