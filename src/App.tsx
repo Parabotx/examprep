@@ -557,7 +557,7 @@ function StudyNotesView({
       <article className="reader-topic-card" key={current.topic.title}>
         <div className="reader-topic-kicker">{current.chapterLabel} · TOPIC {String(current.topicIndex + 1).padStart(2, "0")}</div>
         <h1>{current.topic.title}</h1>
-        <p className="reader-topic-overview">{current.topic.overview}</p>
+        <p className="reader-topic-overview"><HighlightedText text={current.topic.overview} /></p>
 
         <div className="reader-key-points">
           <h2>What this means</h2>
@@ -569,7 +569,7 @@ function StudyNotesView({
         {current.topic.example && (
           <div className="reader-example">
             <span>EXAMPLE</span>
-            <p>{current.topic.example}</p>
+            <p><HighlightedText text={current.topic.example} /></p>
           </div>
         )}
         {current.topic.examFocus && (
@@ -1170,7 +1170,7 @@ function ChapterWorkspace({
         </div>
       )}
 
-      {activeTab !== "study-notes" && <nav className="ias-study-tabs compact" aria-label="Study sections">
+      <nav className={`ias-study-tabs compact ${activeTab === "study-notes" ? "reader-tabs" : ""}`} aria-label="Study sections">
         {studyTabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -1186,7 +1186,7 @@ function ChapterWorkspace({
         })}
         {activeTab === "quizzes" && <span className="tab-utility-label">PRACTICE</span>}
         {activeTab === "exam" && <span className="tab-utility-label">ASSESSMENT</span>}
-      </nav>}
+      </nav>
 
       {activeTab === "study-notes" && (
         <StudyNotesView
