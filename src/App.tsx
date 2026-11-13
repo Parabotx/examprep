@@ -709,7 +709,7 @@ function AssessmentSession({
                   <small>QUESTION {index + 1} · {question.topic}</small>
                   <h4>{question.question}</h4>
                   <p><strong>Your answer:</strong> {answers[index] >= 0 ? question.options[answers[index]] : "Not answered"}</p>
-                  {!isCorrect && <p><strong>Correct answer:</strong> {question.options[question.answerIndex]}</p>
+                  {!isCorrect && <p><strong>Correct answer:</strong> {question.options[question.answerIndex]}</p>}
                   <p className="answer-explanation"><HighlightedText text={question.explanation} /></p>
                   <details className="answer-review-options">
                     <summary>Review why every option fits or does not fit</summary>
