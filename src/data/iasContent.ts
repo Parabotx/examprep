@@ -11,7 +11,7 @@ const chapter1Notes: StudyTopic[] = [
       "The remaining course objectives include elementary cryptography (plaintext, ciphertext, cryptanalysis, symmetric and asymmetric cryptography, digital signatures, message authentication codes, hash functions and Public Key Infrastructure), network protection (protocols, firewalls, VPN, IDS and IPS), and security administration (planning, risk analysis, organizational policies and physical security).",
       "The slide deck gives the assessment weights as Test 30%, Assignment 20%, Quiz 10% and Final Exam 40%, for a total of 100%."
     ],
-    examFocus: "Know the five-chapter course map and the assessment weights as shown in the lecture slides."
+    
   },
   {
     title: "2. Meaning of information and security",
@@ -72,7 +72,7 @@ const chapter1Notes: StudyTopic[] = [
       "Human vulnerabilities include insiders and mistakes or misuse by people.",
       "Poorly chosen passwords such as simple examples like 123 or abc are weak points."
     ],
-    examFocus: "Be able to identify which vulnerability category is illustrated by an example; do not treat all weaknesses as software flaws."
+    examFocus: "Vulnerability examples fall into different categories: a stolen hard disk is a physical weakness, while unvalidated input is a software or input-handling weakness."
   },
   {
     title: "7. Consequences of security breaches",
@@ -107,7 +107,7 @@ const chapter1Notes: StudyTopic[] = [
       "Non-repudiation provides evidence so that a sender cannot later deny sending a message and a recipient cannot deny receiving it.",
       "The lecture's example is a funds-transfer instruction sent to a bank: non-repudiation helps prevent the sender from later denying that the instruction was sent."
     ],
-    examFocus: "Authentication asks 'Who are you?'; authorization asks 'What are you allowed to do?'; non-repudiation addresses later denial of sending or receiving."
+    examFocus: "Authentication verifies identity, authorization determines permitted actions, and non-repudiation provides evidence about sending or receiving a message."
   },
   {
     title: "10. Examples of threats against security criteria",
@@ -118,7 +118,7 @@ const chapter1Notes: StudyTopic[] = [
       "Data availability can be affected by deleting files or making storage unavailable; confidentiality can be affected by unauthorized reading; integrity can be affected by changing or deleting existing files or adding false files.",
       "Communication availability can be affected when messages are deleted or lines are disrupted; confidentiality can be affected when messages are read; integrity can be affected when messages are modified, delayed, duplicated or fabricated."
     ],
-    examFocus: "When given an asset and an incident, identify whether the primary impact is availability, confidentiality or integrity."
+    examFocus: "The primary security impact depends on what was harmed: access to the asset (availability), secrecy of its information (confidentiality), or correctness of its contents (integrity)."
   },
   {
     title: "11. Attack categories based on security criteria",
@@ -154,7 +154,7 @@ const chapter1Notes: StudyTopic[] = [
       "The diagrams show an observer, labelled Darth, observing message contents or patterns as Bob and Alice communicate through the Internet or another communications facility.",
       "Because passive monitoring may leave communication apparently unchanged, encryption is highlighted as a preventive measure."
     ],
-    examFocus: "Distinguish reading message contents from learning information through traffic patterns."
+    examFocus: "Release of message contents reveals what was communicated; traffic analysis reveals information from communication patterns, even without reading the message itself."
   },
   {
     title: "14. Active attack types",
@@ -180,7 +180,7 @@ const chapter1Notes: StudyTopic[] = [
       "Motivations listed for insiders include disgruntlement or revenge, financial gain, espionage and accidental misuse or negligence.",
       "External attacker examples include hackers or cybercriminals, state-sponsored actors, script kiddies and organized-crime groups. Motivations include financial gain, political or ideological goals, espionage and disruption."
     ],
-    examFocus: "The defining distinction is the attacker's relationship to the network and its authorized access, not simply the attacker's motivation."
+    examFocus: "An internal attacker operates from within the network domain or its existing access; an external attacker originates outside that domain. Their motivations can overlap."
   },
   {
     title: "16. Attacks at TCP/IP model layers",
@@ -192,7 +192,7 @@ const chapter1Notes: StudyTopic[] = [
       "Data-link layer: traffic analysis and disruption, with MAC and IEEE 802.11 Wi-Fi given as examples.",
       "These are examples from the slide's layer table; an attack may involve more than one layer in a real network."
     ],
-    examFocus: "Memorize the layer-to-example mapping as presented in the lecture table."
+    examFocus: "The lecture groups attacks by TCP/IP layer: application attacks include email bombing and malicious code; transport examples include session hijacking and SYN flooding; network examples include IP spoofing and flooding; data-link examples include traffic analysis and disruption."
   },
   {
     title: "17. Common attacks and countermeasures",
@@ -205,7 +205,7 @@ const chapter1Notes: StudyTopic[] = [
       "Packet sniffing: use encryption, with SSL and HTTPS named as examples.",
       "Social problems: use education."
     ],
-    examFocus: "Recall the pairs shown in the lecture. IDS is the slide's stated response for detecting exploitation and DoS activity."
+    examFocus: "The lecture pairs each common attack with a countermeasure. It specifically identifies an intrusion detection system (IDS) for detecting exploitation and denial-of-service activity."
   },
   {
     title: "18. Model for network security",
@@ -217,7 +217,7 @@ const chapter1Notes: StudyTopic[] = [
       "A trusted third party may be involved, for example to help with key information or its distribution.",
       "The diagram shows a sender applying a security-related transformation using secret information, the message travelling through an information channel, and the recipient applying a corresponding transformation. An opponent may observe or interfere with the channel."
     ],
-    examFocus: "Know the sender, recipient, insecure channel, opponent, security transformation, secret key and possible trusted third party."
+    examFocus: "The communication model includes a sender and recipient, an insecure channel, an opponent, a security transformation, a secret key and, when needed, a trusted third party."
   },
   {
     title: "19. Four requirements for using the network-security model",
@@ -228,7 +228,7 @@ const chapter1Notes: StudyTopic[] = [
       "Develop methods to distribute and share the secret information or key.",
       "Specify a protocol that enables the principals to use the transformation and secret information to provide a security service."
     ],
-    examFocus: "Remember the sequence: design the algorithm, generate keys, distribute/share keys, and specify the protocol."
+    examFocus: "A security system is developed by designing the algorithm, generating keys, distributing or sharing those keys, and specifying the protocol that governs their use."
   },
   {
     title: "20. Model for network access security",
@@ -239,7 +239,7 @@ const chapter1Notes: StudyTopic[] = [
       "Antivirus and Intrusion Detection Systems (IDS) are shown as controls associated with the information system.",
       "The information system is shown as including communications processors, data, software, processor, software and internal security controls."
     ],
-    examFocus: "Be able to distinguish network access controls (access control, firewall/proxy) from endpoint or system protections (antivirus/IDS) in the diagram."
+    examFocus: "The diagram separates network controls such as access control, firewalls and proxies from endpoint or system protections such as antivirus and intrusion detection."
   },
   {
     title: "21. History of information security",
@@ -253,7 +253,7 @@ const chapter1Notes: StudyTopic[] = [
       "In the 1990s, computer networks became more common and were interconnected, resulting in the Internet as a global network of networks. Early Internet deployments treated security as a low priority.",
       "In the present, millions of networks communicate, many are unsecured, and the security of one network is influenced by the security of every computer to which it connects."
     ],
-    examFocus: "Study the timeline in order: early mainframes/World War II, 1960s ARPA, 1970s-80s ARPANET, RAND R-609, 1990s Internet, present interconnection."
+    examFocus: "The historical sequence in the slides moves from early mainframes and World War II computing, through ARPA in the 1960s and ARPANET in the 1970s–1980s, to the 1990s Internet and today's interconnected systems."
   },
   {
     title: "22. Chapter 1 exit-exam themes",
@@ -263,7 +263,7 @@ const chapter1Notes: StudyTopic[] = [
       "Creating, inserting, updating, changing the status of or deleting database data can threaten integrity.",
       "A student should not receive administrator rights merely to install software when those rights are not required for the student's role. The principle named in the options is least privilege."
     ],
-    examFocus: "This section restates the themes in the deck's exit questions; use the full explanations in the earlier sections to answer similar scenarios."
+    
   }
 ];
 
@@ -405,7 +405,7 @@ const chapter2Notes: StudyTopic[] = [
       "Replicating threats make one or more copies of themselves for later activation on the same system or another system. Viruses and worms are examples.",
       "Do not confuse the two classification axes: host dependence and replication are different questions."
     ],
-    examFocus: "Be able to classify examples under both schemes independently."
+    examFocus: "Malicious software can be classified by its host dependence and by its delivery or behavior. These are separate classification schemes, so a single program can fit one category in each scheme."
   },
   {
     title: "3. Viruses: definition and behavior",
@@ -425,7 +425,7 @@ const chapter2Notes: StudyTopic[] = [
       "Triggering phase: the virus is activated to perform the function for which it was intended. System events may cause the trigger.",
       "Execution phase: the intended function is carried out. It may be harmless (for example, displaying a message) or damaging (for example, destroying programs or data files)."
     ],
-    examFocus: "Keep the order exact: dormant → propagation → triggering → execution."
+    examFocus: "The virus lifecycle proceeds through four stages: dormant, propagation, triggering and execution."
   },
   {
     title: "5. Types of viruses",
@@ -498,7 +498,7 @@ const chapter2Notes: StudyTopic[] = [
       "Examples listed on the slide are simple cookies, mobile codes, web crawlers and Xerox.",
       "Information gathered can include websites visited, browser and system information, and the computer's IP address."
     ],
-    examFocus: "Know the definition and the information categories the slide says may be collected."
+    examFocus: "Spyware is software that secretly gathers information about a person or organization. The lecture lists categories of information it may collect, including user activity and personal data."
   },
   {
     title: "11. Ransomware",
@@ -510,7 +510,7 @@ const chapter2Notes: StudyTopic[] = [
       "Social engineering is also used.",
       "The slides note that there are dozens of ransomware variants."
     ],
-    examFocus: "Recognize the combination of denied access, encrypted data and a ransom demand."
+    examFocus: "Ransomware commonly blocks access to a system or encrypts data, then demands payment to restore access or provide a decryption key."
   },
   {
     title: "12. Spam (junk mail) and prevention",
@@ -533,7 +533,7 @@ const chapter2Notes: StudyTopic[] = [
       "Access attacks attempt to gain unauthorized access to another user account or network device.",
       "Denial-of-service attacks deny a service normally available to a user or organization."
     ],
-    examFocus: "Classify an attack by its primary purpose: gather information, gain unauthorized access or deny service."
+    examFocus: "The lecture groups attacks by purpose: information gathering, unauthorized access and denial of service."
   },
   {
     title: "14. Reconnaissance attacks",
@@ -559,7 +559,7 @@ const chapter2Notes: StudyTopic[] = [
       "Port redirection uses a machine with internal-network access to pass traffic through a firewall or ACL port that would normally deny it. It can bypass security measures and create a communication tunnel; a session-redirection intrusion tool may be installed on the compromised system.",
       "A man-in-the-middle attacker places themselves between two legitimate communicating entities and can read or modify the exchanged data."
     ],
-    examFocus: "Be able to distinguish the four access-attack methods and explain what is being bypassed."
+    examFocus: "The four access-attack methods differ in how they obtain access: password guessing, exploiting trust, port redirection and exploiting a software flaw."
   },
   {
     title: "16. Denial-of-service attacks",
@@ -585,7 +585,7 @@ const chapter2Notes: StudyTopic[] = [
       "Non-malicious flaws are introduced when a programmer overlooks something. The lecture lists buffer overflow, incomplete mediation and time-of-check to time-of-use (TOCTTOU) errors.",
       "Malicious flaws are introduced deliberately, possibly by exploiting a non-malicious vulnerability. Examples listed are virus, worm, rabbit, Trojan horse, trapdoor, logic bomb and time bomb."
     ],
-    examFocus: "Error is the human mistake; fault is the incorrect software element; failure is the observable departure from desired behavior."
+    examFocus: "An error is a human mistake, a fault is the incorrect element in the software, and a failure is the system's observable departure from its intended behavior."
   },
   {
     title: "18. Buffer overflow attacks",
@@ -608,7 +608,7 @@ const chapter2Notes: StudyTopic[] = [
       "The GET URL example includes a user and an operation parameter. An attacker who intercepts and changes the operation from viewaccount to changepassword can confuse the server or cause invalid behavior.",
       "The essential weakness is accepting data or requests without sufficiently verifying that they are valid and authorized."
     ],
-    examFocus: "Distinguish incomplete input validation/mediation from a buffer overflow: they can be related in an example, but they name different flaws."
+    examFocus: "Incomplete validation or mediation means an input or access check is missed or incomplete. A buffer overflow occurs when more data is written into a buffer than it can hold; weak validation can contribute to it, but the terms describe different flaws."
   },
   {
     title: "20. Time-of-check to time-of-use (TOCTTOU)",
@@ -646,7 +646,7 @@ const chapter2Notes: StudyTopic[] = [
       "The slide calls the code-aware approach Clear-Box testing: the reviewer can analyze code and develop scenarios.",
       "Configuration management provides code control."
     ],
-    examFocus: "Black-box = test using inputs/outputs; Clear-Box = inspect code and build test scenarios."
+    examFocus: "Black-box testing checks a program through its inputs and outputs without examining its internal code. Clear-box testing examines the code and uses that knowledge to construct test scenarios."
   },
   {
     title: "23. Administrative controls",
@@ -666,7 +666,7 @@ const chapter2Notes: StudyTopic[] = [
       "Use a firewall to monitor network traffic.",
       "Enforce secure access through least privilege and user controls."
     ],
-    examFocus: "Remember all four controls: endpoint protection, patching, firewall monitoring and least privilege/user controls."
+    examFocus: "The four controls in the lecture are endpoint protection, applying patches, firewall monitoring, and least-privilege/user access controls."
   },
   {
     title: "25. Database security: accounts and access",
@@ -706,7 +706,7 @@ const chapter2Notes: StudyTopic[] = [
       "For remote administrators, the slides recommend gateway servers such as VPN or SSH tunnels.",
       "Encrypt important application files, data files and backups so unauthorized users cannot read critical data."
     ],
-    examFocus: "Keep database controls grouped: identity/access, test/monitor, WAF/physical security, patch/network restriction and encryption."
+    examFocus: "Database protection combines identity and access management, testing and monitoring, web-application and physical security, patching and network restrictions, and encryption."
   },
   {
     title: "29. Chapter 2 lecture-quiz themes",
