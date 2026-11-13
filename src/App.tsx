@@ -55,7 +55,7 @@ function Countdown({
   const parts = formatCountdown(examAt, now);
 
   if (!parts) {
-    return <span className="exam-started">Exam time</span>;
+    return <span className="exam-started">Exam time passed</span>;
   }
 
   if (compact) {
