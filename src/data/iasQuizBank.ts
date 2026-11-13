@@ -9,6 +9,128 @@ interface QuestionSeed {
   topic: string;
 }
 
+
+// These short concept guides add the distinction needed to evaluate a distractor.
+// They follow the terminology and coverage of the two supplied IAS lecture chapters.
+const conceptGuides: Array<[RegExp, string]> = [
+  [/^confidentiality$/, "Confidentiality answers the question “who is allowed to see the information?” It protects secrecy; integrity is about unauthorized changes, while availability is about timely access."],
+  [/^integrity$/, "Integrity is about keeping information accurate and unaltered by unauthorized parties. It is different from confidentiality (who can read it) and availability (whether it can be reached)."],
+  [/^availability$/, "Availability means authorized users can reach an asset when they need it. It is not the same as keeping information secret or preventing unauthorized changes."],
+  [/^authentication$/, "Authentication establishes identity: it checks who a communicating party or user claims to be. Authorization is the separate decision about what that verified identity may do."],
+  [/^authorization$/, "Authorization assigns or checks access rights after an identity is established. It answers what a user is permitted to access or change, rather than who the user is."],
+  [/^non-repudiation$/, "Non-repudiation provides evidence that a party participated in an action or communication, helping prevent a sender from denying a message or a recipient from denying receipt."],
+  [/^threat$/, "A threat is a potential source of harm or an undesirable event that may occur. A vulnerability is the weakness that may be exploited, and an attack is the action that exploits it."],
+  [/^vulnerability$/, "A vulnerability is a weakness in a system, process or defense that can be exploited. It is not the harmful possibility itself (a threat) or the action that exploits the weakness (an attack)."],
+  [/^attack$/, "An attack is the action or method used to exploit a weakness and cause or attempt a security violation. A threat is the potential harm; a vulnerability is the weakness being exploited."],
+  [/^prevention$/, "Prevention is a proactive protection activity: it aims to stop damage before it happens. Detection identifies damage or its cause, while reaction focuses on recovery or response."],
+  [/^detection$/, "Detection identifies whether damage occurred, how it happened and who caused it. It differs from prevention, which tries to stop damage beforehand, and reaction, which responds afterward."],
+  [/^reaction$/, "Reaction covers measures taken after an incident to respond to damage or recover an asset. Prevention acts before damage, while detection discovers and investigates it."],
+  [/^interruption$/, "Interruption attacks availability by making an asset or service unavailable to authorized users. It does not primarily mean secretly reading information, altering it, or inserting fabricated data."],
+  [/^interception$/, "Interception attacks confidentiality by obtaining information without authorization. The information may be observed or copied without being changed."],
+  [/^modification$/, "Modification is an integrity attack because it changes information without proper authorization. Interception observes information; interruption affects availability; fabrication inserts false information."],
+  [/^fabrication$/, "Fabrication creates or inserts false information and therefore attacks authenticity. It differs from modifying an existing message or merely observing a communication."],
+  [/^passive attack$/, "A passive attack observes or gathers information without changing message contents or disrupting the communication. Traffic analysis and release of message contents are examples."],
+  [/^active attack$/, "An active attack changes, injects, replays or disrupts data or services. Unlike a passive attack, it does not merely observe communication."],
+  [/^release of message contents$/, "Release of message contents means an unauthorized party obtains the actual content of a communication. Traffic analysis instead studies patterns such as timing, frequency or volume."],
+  [/^traffic analysis$/, "Traffic analysis studies communication patterns—such as timing, frequency, source, destination or volume—even when the message contents are not read."],
+  [/^masquerade$/, "Masquerade occurs when an attacker pretends to be another, legitimate entity. It is an impersonation attack, not simply the replay of an old message."],
+  [/^replay$/, "A replay attack captures a valid transmission and later retransmits it to create an unauthorized effect. Masquerade impersonates an identity, while replay reuses previously sent data."],
+  [/^internal attack|^internal attack \/ insider attack$/, "An internal or insider attack originates from someone within the organization or from an account with internal access. An external attack originates outside that trusted environment."],
+  [/^external attack$/, "An external attack comes from outside the organization’s trusted environment. An insider attack originates from within or uses legitimate internal access."],
+  [/^physical vulnerability$/, "A physical vulnerability is a weakness in the physical protection of equipment or facilities—for example, hardware that can be stolen because it is not secured."],
+  [/^communication vulnerability$/, "A communication vulnerability affects the channel or medium used to exchange information—for example, an exposed wire that can be tapped."],
+  [/^non-validated input$/, "Non-validated input occurs when a program accepts data without adequately checking whether it is valid or safe. The weakness is in input handling, not in the password or communication channel."],
+  [/^poorly chosen password$/, "A poorly chosen password is easy to guess or discover, such as a very simple or predictable value. It is an authentication weakness rather than a physical or network-layer attack."],
+  [/script kiddie|amateur attacker|amateur \/ script kiddie/i, "A script kiddie or amateur attacker has limited technical skill and relies on existing tools, scripts or instructions rather than developing sophisticated techniques."],
+  [/white hat/i, "A white-hat hacker tests systems with authorization to identify weaknesses and help improve security. The defining distinction is legitimate permission and a defensive purpose."],
+  [/gray hat/i, "A gray-hat hacker falls between the white-hat and black-hat categories; the activity may lack clear authorization even when the person sometimes reports a discovered weakness."],
+  [/black hat/i, "A black-hat hacker acts without authorization for malicious, unethical or criminal purposes, such as stealing information or causing harm."],
+  [/cybercriminal/i, "Cybercriminals are organized or professional criminals who use technology for financial gain, control or other criminal objectives."],
+  [/hacktivist/i, "Hacktivists use cyber activity to promote a political, social or ideological cause or to draw attention to an issue."],
+  [/state-sponsored/i, "State-sponsored attackers operate on behalf of or with the support of a state and may seek intelligence, government secrets or strategic disruption."],
+  [/^firewall$|firewalls|firewall logging/i, "A firewall enforces network traffic rules between systems or network zones. It filters or controls traffic; it is not itself an antivirus scan or a cryptographic key."],
+  [/intrusion detection|\bids\b/i, "An intrusion-detection system monitors activity for signs of suspicious or unauthorized behavior and raises alerts. Detection is different from a firewall’s traffic-filtering role."],
+  [/encryption|ssl|https|ipsec/i, "Encryption transforms readable information into protected form using cryptographic methods and keys. It protects information in transit or storage; it is not the same as access permission or traffic filtering."],
+  [/^ping sweep|ping sweeping|ping sweeps/i, "A ping sweep probes a range of IP addresses to discover which hosts respond. It is a reconnaissance technique for identifying live systems, not a port-by-port service inventory."],
+  [/^port scan|port scanning|port scanner|port scan completing/i, "A port scan checks a host’s ports to discover which services or network entry points are open. It is more specific than a ping sweep, which looks for responsive hosts."],
+  [/sniffer|packet sniff/i, "A packet sniffer captures or observes network traffic. It can support traffic monitoring or eavesdropping, but it does not by itself describe a flood that overwhelms a service."],
+  [/^syn flood|tcp syn flood|syn flooding/i, "A SYN flood abuses the TCP connection-establishment process by sending many SYN requests, consuming server resources and potentially preventing legitimate connections."],
+  [/^smurf attack/i, "A Smurf attack is a denial-of-service technique that abuses ICMP echo requests and broadcast amplification to overwhelm a target with replies."],
+  [/^teardrop/i, "A Teardrop attack exploits the handling of fragmented IP packets, potentially causing failures in vulnerable systems. It is not a password-guessing or packet-observation technique."],
+  [/^nslookup|dns hostname/i, "nslookup queries DNS to obtain name-resolution information, such as the address associated with a hostname. It is a reconnaissance aid, not a port scanner."],
+  [/^malicious code$/, "Malicious code is software or a script intended to perform unauthorized actions, disrupt normal operation, cause damage or create a security breach."],
+  [/^virus$|viruses|virus life|virus propagation/i, "A virus attaches to or infects another program or area and replicates by modifying a host. Its dependence on a host distinguishes it from a self-contained worm."],
+  [/^worm$|worms and/i, "A worm is self-contained malware that can replicate and spread between computers, commonly over a network, without needing to attach itself to a host program."],
+  [/logic bomb/i, "A logic bomb is code embedded in a legitimate program that activates when a specified condition or trigger occurs, such as a date, file state or user action."],
+  [/trojan|proxy trojan|ftp trojan|data-sending trojan|destructive trojan|remote-access trojan|dos trojan|security-software disabler/i, "A Trojan horse disguises malicious behavior as useful or interesting software to persuade a victim to install or run it. The lecture distinguishes Trojan subtypes by the damage or access they provide."],
+  [/spyware/i, "Spyware is software placed on a device, often without the user’s knowledge, that monitors activities or gathers information and reports it to another party."],
+  [/ransomware|encrypting data for ransom/i, "Ransomware denies access to a system or its data and demands payment to restore access. It frequently encrypts files, so the defining feature is extortion linked to blocked access."],
+  [/^spam$|spam filtering|spam filter|junk mail/i, "Spam is unsolicited bulk or junk messaging. Spam filters help classify or block unwanted messages; opening attachments or replying can increase risk."],
+  [/dormant phase/i, "During the dormant phase, a virus is idle and has not yet begun its active spread or payload. A trigger may later cause it to move into another phase."],
+  [/propagation phase/i, "During propagation, a virus makes copies of itself and inserts them into other programs or system areas so additional infected copies can spread."],
+  [/triggering phase/i, "The triggering phase begins when the required event or condition activates the virus’s intended function. It is distinct from the earlier period of inactivity."],
+  [/execution phase/i, "The execution phase is when the virus performs the action or payload for which it was designed after activation."],
+  [/macro virus|macro infection/i, "A macro virus uses an application’s macro capability and commonly infects documents. Because documents can be shared, email attachments are a common spreading route."],
+  [/email virus|melissa/i, "An email virus spreads through email, often by using an infected attachment or document macro and forwarding itself to contacts or mailing lists."],
+  [/boot-sector virus|boot-sector infection/i, "A boot-sector virus infects the disk area used during system startup. Its target is the boot process, not ordinary document macros."],
+  [/polymorphic virus/i, "A polymorphic virus changes aspects of its code or signature as it replicates, making simple signature-based detection more difficult."],
+  [/metamorphic virus/i, "A metamorphic virus rewrites or transforms its own code as it replicates while retaining its behavior, rather than merely changing a small signature."],
+  [/stealth virus/i, "A stealth virus attempts to hide its presence by concealing changes or misleading monitoring tools, making infection harder to notice."],
+  [/^buffer overflow|buffer overflows/i, "A buffer overflow occurs when a program writes more data into a buffer than it can safely hold, potentially overwriting adjacent memory and changing program behavior."],
+  [/incomplete mediation/i, "Incomplete mediation occurs when a system fails to check every access or every use of a resource, allowing an action to bypass a required security check."],
+  [/tocttou|time-of-check/i, "A time-of-check to time-of-use (TOCTTOU) error occurs when a condition changes between the time a program checks it and the time it uses the resource, creating a race-condition opportunity."],
+  [/peer review/i, "Peer review is a software-development control in which other developers inspect code or design to find defects and weaknesses before release."],
+  [/configuration management/i, "Configuration management controls and tracks system or software changes so that approved settings and versions remain consistent and unauthorized changes can be identified."],
+  [/database backups/i, "Database backups support recovery after loss or damage, but backups alone do not prevent unauthorized access or secure an exposed database."],
+  [/database administrator/i, "A database administrator manages database operation, configuration and access. The job title itself is not a security control or an attack category."],
+  [/^a tcp three-way handshake|tcp three-way handshake/i, "The TCP three-way handshake establishes a connection through SYN, SYN-ACK and ACK messages. It is a protocol procedure, not a security filter or malware type."],
+  [/^trusted third party|trusted-third-party/i, "A trusted third party can help communicating parties establish or exchange security information, such as keys, within a network-security model."],
+  [/^key distribution|distribute\/share keys/i, "Key distribution is the process of securely delivering or sharing cryptographic keys with the parties that need them. It is one part of deploying an encryption-based security service."],
+  [/^modularity|encapsulation|data hiding/i, "Modularity, encapsulation and data hiding are software-design principles that help organize and limit access to program components; they are not attack classes."],
+  [/^availability loss|improved availability/i, "Availability concerns whether authorized users can access a service when needed. A claim of improved availability describes an outcome, not an attack method."],
+];
+
+function conceptGuide(option: string): string {
+  const normalized = option.trim().toLowerCase();
+  const exact: Record<string, string> = {
+    "asset": "An asset is something valuable that must be protected, such as information, hardware, software or a service.",
+    "countermeasure": "A countermeasure is a safeguard or action used to prevent, detect or reduce the effect of a security threat or attack.",
+    "key distribution": "Key distribution is the secure delivery or sharing of cryptographic keys with the parties that need them.",
+    "traffic flooding": "Traffic flooding overwhelms a service or network with excessive traffic, making legitimate use difficult or impossible.",
+    "access attack": "An access attack attempts to gain unauthorized access to information, accounts or system resources.",
+    "reconnaissance": "Reconnaissance gathers information about a target—such as hosts, services or network details—before a later attack.",
+    "denial of service": "A denial-of-service attack attempts to make a system or service unavailable by exhausting resources or disrupting normal operation.",
+    "host-dependent and independent malware": "Host-dependent malware needs another program or host to exist or execute, while independent malware is self-contained and can run on its own.",
+    "viruses and logic bombs": "Viruses and logic bombs are examples of malicious code that depend on a host program or application context.",
+    "worms and zombie programs": "Worms and zombie programs are examples of independent, self-contained programs that can run under operating-system control.",
+    "viruses and worms": "Viruses and worms can replicate, but a virus infects a host program while a worm is self-contained and can spread between computers.",
+    "logic bombs and zombie programs": "Logic bombs and zombie programs are examples of malicious software that can be activated by a trigger without needing to replicate.",
+    "prevention, detection, reaction and recovery": "These are distinct protection activities: stop damage, discover it, respond to it and restore affected assets.",
+  };
+  if (exact[normalized]) return exact[normalized];
+  return conceptGuides.find(([pattern]) => pattern.test(normalized))?.[1] ?? "";
+}
+
+function expandedExplanation(seed: QuestionSeed): string {
+  const guide = conceptGuide(seed.answer);
+  return guide
+    ? `${seed.explanation} ${guide}`
+    : `${seed.explanation} The key distinction is the exact function described by the question: ${seed.answer}. A related security term may be important elsewhere, but it does not replace this specific concept.`;
+}
+
+function optionExplanation(seed: QuestionSeed, option: string, fullExplanation: string): string {
+  if (option === seed.answer) return fullExplanation;
+  const guide = conceptGuide(option);
+  const distinction = guide
+    ? `${guide} `
+    : `${option} is a different term or category from the one being tested. It may be relevant elsewhere in security, but it does not describe the specific condition in this question. `;
+  return `${distinction}Here, the correct concept is ${seed.answer.toLowerCase()}: ${seed.explanation}`;
+}
+
+function buildOptionExplanations(seed: QuestionSeed, options: string[], fullExplanation: string): string[] {
+  return options.map((option) => optionExplanation(seed, option, fullExplanation));
+}
+
 function buildBank(prefix: string, seeds: QuestionSeed[]): QuizQuestion[] {
   return seeds.flatMap((seed, index) => {
     const baseOptions = [seed.answer, ...seed.distractors];
@@ -23,7 +145,8 @@ function buildBank(prefix: string, seeds: QuestionSeed[]): QuizQuestion[] {
         question: seed.question,
         options: directOptions,
         answerIndex: directOptions.indexOf(seed.answer),
-        explanation: seed.explanation,
+        explanation: expandedExplanation(seed),
+        optionExplanations: buildOptionExplanations(seed, directOptions, expandedExplanation(seed)),
         topic: seed.topic,
       },
       {
@@ -31,7 +154,8 @@ function buildBank(prefix: string, seeds: QuestionSeed[]): QuizQuestion[] {
         question: seed.scenario,
         options: scenarioOptions,
         answerIndex: scenarioOptions.indexOf(seed.answer),
-        explanation: seed.explanation,
+        explanation: expandedExplanation(seed),
+        optionExplanations: buildOptionExplanations(seed, scenarioOptions, expandedExplanation(seed)),
         topic: seed.topic,
       },
     ];
