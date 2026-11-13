@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -26,11 +26,8 @@ import type {
   ChapterLearningContent,
   CourseId,
   ExamCourse,
-  InteractiveScenario,
   QuizQuestion,
   StudyTab,
-  StudyTopic,
-  SummaryTopic,
 } from "./types";
 
 const ETHIOPIA_TIME_ZONE = "Africa/Addis_Ababa";
@@ -169,7 +166,7 @@ function EmptyState({
   title,
   description,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
 }) {
@@ -264,7 +261,7 @@ function TopicGroup({
 }: {
   title: string;
   subtitle: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <section className="topic-group">
@@ -740,7 +737,7 @@ function ChapterWorkspace({
   session: SessionState | null;
   setSession: (session: SessionState | null) => void;
 }) {
-  const chapterGroups = chaptersFor(scope);
+  const chapterGroups = useMemo(() => chaptersFor(scope), [scope]);
   const isCombined = scope === "combined";
   const chapterName = scope === "chapter1" ? "Chapter 1 · Introduction" : scope === "chapter2" ? "Chapter 2 · Computer Threat" : "Combined study";
 
