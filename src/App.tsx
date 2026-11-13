@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode, type CSSProperties } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -7,16 +7,24 @@ import {
   Brain,
   CheckCircle2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Clock3,
   FileText,
   GraduationCap,
   Layers3,
   LockKeyhole,
+  Maximize,
+  Minimize,
+  Moon,
+  Minus,
   Play,
   Palette,
+  Plus,
   RotateCcw,
   ShieldCheck,
   Sparkles,
+  Sun,
   Target,
   Trophy,
 } from "lucide-react";
@@ -50,6 +58,9 @@ type TopicPerformance = {
 
 const SAVED_STUDY_STATE_KEY = "examprep:study-state";
 const SAVED_READING_TONE_KEY = "examprep:reading-tone";
+const SAVED_READER_SIZE_KEY = "examprep:reader-size";
+const SAVED_THEME_KEY = "examprep:theme";
+type ThemeMode = "light" | "dark";
 
 type SavedStudyState = {
   selectedCourseId: CourseId | null;
@@ -86,6 +97,23 @@ function readSavedStudyState(): SavedStudyState | null {
     };
   } catch {
     return null;
+  }
+}
+
+function readSavedTheme(): ThemeMode {
+  try {
+    return window.localStorage.getItem(SAVED_THEME_KEY) === "dark" ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+}
+
+function readSavedReaderSize(): number {
+  try {
+    const value = Number(window.localStorage.getItem(SAVED_READER_SIZE_KEY));
+    return Number.isFinite(value) && value >= 90 && value <= 140 ? value : 100;
+  } catch {
+    return 100;
   }
 }
 
@@ -288,34 +316,113 @@ function EmptyState({
   );
 }
 
+function ThemeToggle({ theme, onToggle }: { theme: ThemeMode; onToggle: () => void }) {
+  return (
+    <button className="reader-icon-button" onClick={onToggle} aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} title={theme === "dark" ? "Light theme" : "Dark theme"}>
+      {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+    </button>
+  );
+}
+
+function FullscreenToggle() {
+  const [isFullscreen, setIsFullscreen] = useState(Boolean(document.fullscreenElement));
+
+  useEffect(() => {
+    const update = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", update);
+    return () => document.removeEventListener("fullscreenchange", update);
+  }, []);
+
+  const toggle = async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+    } catch {
+      // Full-screen mode is optional; keep the reading layout usable if blocked.
+    }
+  };
+
+  return (
+    <button className="reader-icon-button" onClick={toggle} aria-label={isFullscreen ? "Exit full screen" : "Enter full screen"} title={isFullscreen ? "Exit full screen" : "Full screen"}>
+      {isFullscreen ? <Minimize size={17} /> : <Maximize size={17} />}
+    </button>
+  );
+}
+
+function ReaderAppearanceControls({
+  theme,
+  onThemeToggle,
+  fontSize,
+  onFontSizeChange,
+  toneIndex,
+  onToneChange,
+}: {
+  theme: ThemeMode;
+  onThemeToggle: () => void;
+  fontSize: number;
+  onFontSizeChange: (value: number) => void;
+  toneIndex: number;
+  onToneChange: (value: number) => void;
+}) {
+  return (
+    <div className="reader-appearance-controls" aria-label="Reading appearance">
+      <ThemeToggle theme={theme} onToggle={onThemeToggle} />
+      <div className="reader-font-control" aria-label="Reader text size">
+        <button className="reader-icon-button" onClick={() => onFontSizeChange(Math.max(90, fontSize - 5))} disabled={fontSize <= 90} aria-label="Decrease text size"><Minus size={15} /></button>
+        <span>{fontSize}%</span>
+        <button className="reader-icon-button" onClick={() => onFontSizeChange(Math.min(140, fontSize + 5))} disabled={fontSize >= 140} aria-label="Increase text size"><Plus size={15} /></button>
+      </div>
+      <div className="reader-color-choices" aria-label="Reading background color">
+        {readingTones.map((tone, index) => (
+          <button
+            key={tone.id}
+            className={`reader-color-swatch ${toneIndex === index ? "active" : ""}`}
+            onClick={() => onToneChange(index)}
+            aria-label={`Use ${tone.label} background`}
+            aria-pressed={toneIndex === index}
+            title={tone.label}
+          >
+            <span style={{ background: tone.swatch }} />
+          </button>
+        ))}
+      </div>
+      <FullscreenToggle />
+    </div>
+  );
+}
+
 function CourseHeader({
   course,
   now,
   onBack,
+  theme,
+  onThemeToggle,
 }: {
   course: ExamCourse;
   now: number;
   onBack: () => void;
+  theme: ThemeMode;
+  onThemeToggle: () => void;
 }) {
   return (
-    <>
-      <button className="back-link" onClick={onBack}>
-        <ArrowLeft size={16} /> All courses
-      </button>
-      <div className="course-intro-strip">
-        <div className="course-intro-icon"><GraduationCap size={22} /></div>
-        <div className="course-intro-copy">
-          <span className="eyebrow">YOUR COURSE SPACE</span>
+    <div className="course-page-heading">
+      <div className="course-page-heading-top">
+        <button className="back-link" onClick={onBack}><ArrowLeft size={16} /> All courses</button>
+        <ThemeToggle theme={theme} onToggle={onThemeToggle} />
+      </div>
+      <div className="course-summary-card">
+        <div className="course-summary-mark"><GraduationCap size={21} /></div>
+        <div className="course-summary-title">
           <h1>{course.title}</h1>
+          <p>Prepare at your own pace. Your next exam is shown in Ethiopia time.</p>
         </div>
-        <div className="course-intro-exam">
-          <span>NEXT EXAM</span>
+        <div className="course-summary-exam">
           <strong>8:00 AM</strong>
-          <small>{formatExamDate(course.examAt)}</small>
+          <span>{formatExamDate(course.examAt)}</span>
           <Countdown examAt={course.examAt} now={now} compact />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -382,50 +489,105 @@ function TopicGroup({
   );
 }
 
-function StudyNotesView({ chapters }: { chapters: ChapterLearningContent[] }) {
+function StudyNotesView({
+  chapters,
+  onExit,
+  theme,
+  onThemeToggle,
+  fontSize,
+  onFontSizeChange,
+  toneIndex,
+  onToneChange,
+}: {
+  chapters: ChapterLearningContent[];
+  onExit: () => void;
+  theme: ThemeMode;
+  onThemeToggle: () => void;
+  fontSize: number;
+  onFontSizeChange: (value: number) => void;
+  toneIndex: number;
+  onToneChange: (value: number) => void;
+}) {
+  const sections = useMemo(
+    () => chapters.flatMap((chapter) => chapter.studyNotes.map((topic, topicIndex) => ({
+      topic,
+      topicIndex,
+      chapterId: chapter.id,
+      chapterTitle: chapter.title,
+      chapterLabel: chapter.id === "chapter1" ? "CHAPTER 01" : "CHAPTER 02",
+    }))),
+    [chapters],
+  );
+  const [activeIndex, setActiveIndex] = useState(0);
+  const current = sections[activeIndex];
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [chapters]);
+
+  if (!current) return <EmptyState icon={<BookOpen size={22} />} title="No notes available" description="There are no notes in this section yet." />;
+
+  const isLast = activeIndex === sections.length - 1;
+
   return (
-    <div className="learning-column">
-      {chapters.map((chapter) => (
-        <TopicGroup key={chapter.id} title={chapter.title} subtitle={chapter.subtitle}>
-          <div className="study-topic-list">
-            {chapter.studyNotes.map((topic, index) => (
-              <details className="study-topic-card" key={topic.title} open={index === 0}>
-                <summary>
-                  <span className="topic-number">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="topic-title-wrap">
-                    <strong>{topic.title}</strong>
-                    <small><HighlightedText text={topic.overview} /></small>
-                  </span>
-                  <ChevronDown size={18} className="topic-chevron" />
-                </summary>
-                <div className="topic-details">
-                  <p className="topic-overview"><HighlightedText text={topic.overview} /></p>
-                  <ul>
-                    {topic.keyPoints.map((point) => <li key={point}><HighlightedText text={point} /></li>)}
-                  </ul>
-                  {topic.example && (
-                    <div className="topic-example">
-                      <span>EXAMPLE</span>
-                      <p className="handwritten-example"><HighlightedText text={topic.example} /></p>
-                    </div>
-                  )}
-                  {topic.examFocus && (
-                    <div className="topic-exam-focus">
-                      <Sparkles size={15} />
-                      <p className="handwritten-focus"><strong>Exam focus:</strong> <HighlightedText text={topic.examFocus} /></p>
-                    </div>
-                  )}
-                </div>
-              </details>
-            ))}
-          </div>
-        </TopicGroup>
-      ))}
-      <div className="source-coverage-note">
-        <CheckCircle2 size={16} />
-        <span>Detailed notes are organized to follow the topics in the uploaded lecture slides, including the diagrams and tables.</span>
+    <section className={`reader-experience tone-${readingTones[toneIndex].id}`} style={{ "--reader-scale": fontSize / 100 } as CSSProperties}>
+      <div className="reader-topbar">
+        <button className="reader-exit-button" onClick={onExit}><ArrowLeft size={16} /><span>Exit reading</span></button>
+        <div className="reader-context">
+          <span>{current.chapterLabel}</span>
+          <strong>Information Assurance &amp; Security</strong>
+        </div>
+        <ReaderAppearanceControls
+          theme={theme}
+          onThemeToggle={onThemeToggle}
+          fontSize={fontSize}
+          onFontSizeChange={onFontSizeChange}
+          toneIndex={toneIndex}
+          onToneChange={onToneChange}
+        />
       </div>
-    </div>
+
+      <div className="reader-progress-row">
+        <span>SECTION {String(activeIndex + 1).padStart(2, "0")}</span>
+        <span>{activeIndex + 1} of {sections.length}</span>
+      </div>
+      <div className="reader-progress-track"><span style={{ width: `${((activeIndex + 1) / sections.length) * 100}%` }} /></div>
+
+      <article className="reader-topic-card" key={current.topic.title}>
+        <div className="reader-topic-kicker">{current.chapterLabel} · TOPIC {String(current.topicIndex + 1).padStart(2, "0")}</div>
+        <h1>{current.topic.title}</h1>
+        <p className="reader-topic-overview">{current.topic.overview}</p>
+
+        <div className="reader-key-points">
+          <h2>What this means</h2>
+          <ul>
+            {current.topic.keyPoints.map((point) => <li key={point}><HighlightedText text={point} /></li>)}
+          </ul>
+        </div>
+
+        {current.topic.example && (
+          <div className="reader-example">
+            <span>EXAMPLE</span>
+            <p>{current.topic.example}</p>
+          </div>
+        )}
+        {current.topic.examFocus && (
+          <div className="reader-concept-note">
+            <Sparkles size={17} />
+            <div><strong>Concept connection</strong><p>{current.topic.examFocus}</p></div>
+          </div>
+        )}
+      </article>
+
+      <div className="reader-navigation">
+        <button className="reader-nav-button previous" onClick={() => setActiveIndex((index) => Math.max(0, index - 1))} disabled={activeIndex === 0}>
+          <ChevronLeft size={18} /><span><small>PREVIOUS</small><strong>{activeIndex > 0 ? sections[activeIndex - 1].topic.title : "Start of chapter"}</strong></span>
+        </button>
+        <button className="reader-nav-button next" onClick={() => isLast ? onExit() : setActiveIndex((index) => Math.min(sections.length - 1, index + 1))}>
+          <span><small>{isLast ? "FINISH" : "NEXT SECTION"}</small><strong>{isLast ? "Return to chapters" : sections[activeIndex + 1].topic.title}</strong></span><ChevronRight size={18} />
+        </button>
+      </div>
+    </section>
   );
 }
 
@@ -936,6 +1098,12 @@ function ChapterWorkspace({
   setExamCount,
   session,
   setSession,
+  theme,
+  onThemeToggle,
+  fontSize,
+  onFontSizeChange,
+  toneIndex,
+  onToneChange,
 }: {
   scope: StudyScope;
   activeTab: StudyTab;
@@ -951,21 +1119,15 @@ function ChapterWorkspace({
   setExamCount: (count: number) => void;
   session: SessionState | null;
   setSession: (session: SessionState | null) => void;
+  theme: ThemeMode;
+  onThemeToggle: () => void;
+  fontSize: number;
+  onFontSizeChange: (value: number) => void;
+  toneIndex: number;
+  onToneChange: (value: number) => void;
 }) {
   const chapterGroups = useMemo(() => chaptersFor(scope), [scope]);
-  const [readingToneIndex, setReadingToneIndex] = useState(readSavedReadingTone);
   const isCombined = scope === "combined";
-  const activeReadingTone = readingTones[readingToneIndex];
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(SAVED_READING_TONE_KEY, String(readingToneIndex));
-    } catch {
-      // The reading experience still works when browser storage is unavailable.
-    }
-  }, [readingToneIndex]);
-
-  const chapterName = scope === "chapter1" ? "Chapter 1 · Introduction" : scope === "chapter2" ? "Chapter 2 · Computer Threat" : "Combined study";
 
   const begin = (
     mode: AssessmentMode,
@@ -978,13 +1140,7 @@ function ChapterWorkspace({
       ? completeBank.filter((question) => focusTopics.includes(question.topic))
       : completeBank;
     const questions = randomQuestions(bank, count);
-    setSession({
-      mode,
-      scope: selectedScope,
-      questions,
-      count: questions.length,
-      focusTopics,
-    });
+    setSession({ mode, scope: selectedScope, questions, count: questions.length, focusTopics });
   };
 
   const retake = () => {
@@ -996,115 +1152,91 @@ function ChapterWorkspace({
     if (!session) return;
     const topicBank = quizBankFor(session.scope).filter((question) => topics.includes(question.topic));
     if (topicBank.length === 0) return;
-    const targetCount = Math.min(session.count, topicBank.length);
-    begin("quiz", session.scope, targetCount, topics);
+    begin("quiz", session.scope, Math.min(session.count, topicBank.length), topics);
     setActiveTab("quizzes");
   };
 
   return (
     <section className="chapter-workspace">
-      <div className="workspace-breadcrumb">
-        <button className="back-link" onClick={onBackToChapters}><ArrowLeft size={15} /> Chapters</button>
-        <span>{chapterName}</span>
-      </div>
-
-      <div className="workspace-title-row">
-        <div className="workspace-title-icon"><BookOpen size={22} /></div>
-        <div className="workspace-title-copy">
-          <span className="eyebrow">{isCombined ? "COMPLETE REVISION SPACE" : scope === "chapter1" ? "CHAPTER 01" : "CHAPTER 02"}</span>
-          <h1>{isCombined ? "Study both chapters" : scope === "chapter1" ? chapter1.title : chapter2.title}</h1>
-          <p>{isCombined ? "Everything from Introduction and Computer Threat, in one connected learning space." : scope === "chapter1" ? "Build a clear foundation in information assurance and security." : "Understand malicious code, attack methods and security controls."}</p>
+      {activeTab !== "study-notes" && (
+        <div className="study-workspace-topbar">
+          <button className="reader-exit-button" onClick={onBackToChapters}><ArrowLeft size={16} /><span>Chapters</span></button>
+          <div className="study-workspace-context">
+            <span>{scope === "chapter1" ? "CHAPTER 01" : scope === "chapter2" ? "CHAPTER 02" : "COMBINED STUDY"}</span>
+            <strong>{scope === "chapter1" ? "Introduction" : scope === "chapter2" ? "Computer Threat" : "Both chapters"}</strong>
+          </div>
+          <div className="study-workspace-actions"><ThemeToggle theme={theme} onToggle={onThemeToggle} /><FullscreenToggle /></div>
         </div>
-        <button
-          className="workspace-exam-button"
-          onClick={() => {
-            setSession(null);
-            setActiveTab("exam");
-            if (scope !== "combined") setExamScope(scope);
-            else setExamScope("combined");
-          }}
-        >
-          <GraduationCap size={16} /> Take exam
-        </button>
-      </div>
+      )}
 
-      <nav className="ias-study-tabs" aria-label="Study sections">
+      <nav className={`ias-study-tabs compact ${activeTab === "study-notes" ? "reader-tabs" : ""}`} aria-label="Study sections">
         {studyTabs.map((tab) => {
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
               className={`ias-study-tab ${activeTab === tab.id ? "active" : ""}`}
-              onClick={() => {
-                setSession(null);
-                setActiveTab(tab.id);
-              }}
+              onClick={() => { setSession(null); setActiveTab(tab.id); }}
               aria-current={activeTab === tab.id ? "page" : undefined}
             >
-              <Icon size={16} />
-              <span>{tab.label}</span>
+              <Icon size={15} /><span>{tab.label === "Interactive study" ? "Scenarios" : tab.label}</span>
             </button>
           );
         })}
+        {activeTab === "quizzes" && <span className="tab-utility-label">PRACTICE</span>}
+        {activeTab === "exam" && <span className="tab-utility-label">ASSESSMENT</span>}
       </nav>
 
-      <div className={`ias-tab-content reading-surface tone-${activeReadingTone.id}`}>
-        <div className="reading-style-toolbar">
-          <div>
-            <span className="eyebrow"><Palette size={13} /> READING CANVAS</span>
-            <small>{activeReadingTone.label} · choose a softer page background</small>
-          </div>
-          <div className="reading-tone-choices" aria-label="Reading background">
-            {readingTones.map((tone, index) => (
-              <button
-                key={tone.id}
-                className={`reading-tone-choice ${index === readingToneIndex ? "active" : ""}`}
-                onClick={() => setReadingToneIndex(index)}
-                title={tone.label}
-                aria-label={`Use ${tone.label} reading background`}
-                aria-pressed={index === readingToneIndex}
-              >
-                <span style={{ background: tone.swatch }} />
-                <small>{tone.label}</small>
-              </button>
-            ))}
-          </div>
+      {activeTab === "study-notes" && (
+        <StudyNotesView
+          key={scope}
+          chapters={chapterGroups}
+          onExit={onBackToChapters}
+          theme={theme}
+          onThemeToggle={onThemeToggle}
+          fontSize={fontSize}
+          onFontSizeChange={onFontSizeChange}
+          toneIndex={toneIndex}
+          onToneChange={onToneChange}
+        />
+      )}
+      {activeTab !== "study-notes" && (
+        <div className="ias-tab-content">
+          {activeTab === "short-notes" && <ShortNotesView chapters={chapterGroups} />}
+          {activeTab === "summary" && <SummaryView chapters={chapterGroups} />}
+          {activeTab === "interactive" && <InteractiveStudyView chapters={chapterGroups} />}
+          {activeTab === "quizzes" && (
+            session ? (
+              <AssessmentSession key={session.questions.map((question) => question.id).join("|")} session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
+            ) : (
+              <AssessmentSetup
+                mode="quiz"
+                currentScope={isCombined ? quizScope : scope}
+                allowScopeChoice={isCombined}
+                onScopeChange={setQuizScope}
+                count={quizCount}
+                onCountChange={setQuizCount}
+                onStart={() => begin("quiz", isCombined ? quizScope : scope, quizCount)}
+              />
+            )
+          )}
+          {activeTab === "exam" && (
+            session ? (
+              <AssessmentSession key={session.questions.map((question) => question.id).join("|")} session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
+            ) : (
+              <AssessmentSetup
+                mode="exam"
+                currentScope={isCombined ? examScope : scope}
+                allowScopeChoice={isCombined}
+                onScopeChange={setExamScope}
+                count={examCount}
+                onCountChange={setExamCount}
+                onStart={() => begin("exam", isCombined ? examScope : scope, examCount)}
+              />
+            )
+          )}
         </div>
-        {activeTab === "study-notes" && <StudyNotesView chapters={chapterGroups} />}
-        {activeTab === "short-notes" && <ShortNotesView chapters={chapterGroups} />}
-        {activeTab === "summary" && <SummaryView chapters={chapterGroups} />}
-        {activeTab === "interactive" && <InteractiveStudyView chapters={chapterGroups} />}
-        {activeTab === "quizzes" && (
-          session ? (
-            <AssessmentSession key={session.questions.map((question) => question.id).join("|")} session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
-          ) : (
-            <AssessmentSetup
-              mode="quiz"
-              currentScope={isCombined ? quizScope : scope}
-              allowScopeChoice={isCombined}
-              onScopeChange={setQuizScope}
-              count={quizCount}
-              onCountChange={setQuizCount}
-              onStart={() => begin("quiz", isCombined ? quizScope : scope, quizCount)}
-            />
-          )
-        )}
-        {activeTab === "exam" && (
-          session ? (
-            <AssessmentSession key={session.questions.map((question) => question.id).join("|")} session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
-          ) : (
-            <AssessmentSetup
-              mode="exam"
-              currentScope={isCombined ? examScope : scope}
-              allowScopeChoice={isCombined}
-              onScopeChange={setExamScope}
-              count={examCount}
-              onCountChange={setExamCount}
-              onStart={() => begin("exam", isCombined ? examScope : scope, examCount)}
-            />
-          )
-        )}
-      </div>
+      )}
     </section>
   );
 }
@@ -1133,7 +1265,40 @@ function App() {
     } catch {
       // Navigation remains fully usable when browser storage is unavailable.
     }
+  }, [selectedCourseId, selectedChapter, activeTab, quizScope, examScope])function App() {
+  const [now, setNow] = useState(() => Date.now());
+  const [restoredState] = useState(readSavedStudyState);
+  const [selectedCourseId, setSelectedCourseId] = useState<CourseId | null>(() => restoredState?.selectedCourseId ?? null);
+  const [selectedChapter, setSelectedChapter] = useState<StudyScope | null>(() => restoredState?.selectedChapter ?? null);
+  const [activeTab, setActiveTab] = useState<StudyTab>(() => restoredState?.activeTab ?? "study-notes");
+  const [quizScope, setQuizScope] = useState<StudyScope>(() => restoredState?.quizScope ?? "combined");
+  const [examScope, setExamScope] = useState<StudyScope>(() => restoredState?.examScope ?? "combined");
+  const [quizCount, setQuizCount] = useState(15);
+  const [examCount, setExamCount] = useState(15);
+  const [session, setSession] = useState<SessionState | null>(null);
+  const [theme, setTheme] = useState<ThemeMode>(readSavedTheme);
+  const [fontSize, setFontSize] = useState(readSavedReaderSize);
+  const [toneIndex, setToneIndex] = useState(readSavedReadingTone);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SAVED_STUDY_STATE_KEY, JSON.stringify({
+        selectedCourseId, selectedChapter, activeTab, quizScope, examScope,
+      }));
+    } catch { /* Local preferences are optional. */ }
   }, [selectedCourseId, selectedChapter, activeTab, quizScope, examScope]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SAVED_THEME_KEY, theme);
+      window.localStorage.setItem(SAVED_READER_SIZE_KEY, String(fontSize));
+      window.localStorage.setItem(SAVED_READING_TONE_KEY, String(toneIndex));
+    } catch { /* The interface remains usable without local storage. */ }
+  }, [theme, fontSize, toneIndex]);
+
+  useEffect(() => {
+    document.documentElement.style.colorScheme = theme;
+  }, [theme]);
 
   useEffect(() => {
     const interval = window.setInterval(() => setNow(Date.now()), 1000);
@@ -1178,20 +1343,21 @@ function App() {
   };
 
   return (
-    <div className="app-shell">
-      <header className="site-header">
-        <button className="brand" onClick={goHome} aria-label="ExamPrep home">
-          <span className="brand-mark"><GraduationCap size={20} strokeWidth={2.2} /></span>
-          <span className="brand-name">exam<span>prep</span></span>
-        </button>
-        <div className="header-time">
-          <span className="live-indicator" />
-          <span>ADDIS ABABA</span>
-          <strong>{formatEthiopiaClock(now)}</strong>
-        </div>
-      </header>
+    <div className={`app-shell ${theme === "dark" ? "theme-dark" : "theme-light"}`}>
+      {!selectedCourse && (
+        <header className="site-header">
+          <button className="brand" onClick={goHome} aria-label="ExamPrep home">
+            <span className="brand-mark"><GraduationCap size={20} strokeWidth={2.2} /></span>
+            <span className="brand-name">exam<span>prep</span></span>
+          </button>
+          <div className="header-actions">
+            <div className="header-time"><span className="live-indicator" /><span>ADDIS ABABA</span><strong>{formatEthiopiaClock(now)}</strong></div>
+            <ThemeToggle theme={theme} onToggle={() => setTheme((value) => value === "dark" ? "light" : "dark")} />
+          </div>
+        </header>
+      )}
 
-      <main className="page-content">
+      <main className={`page-content ${selectedChapter ? "chapter-reader-page" : ""} ${selectedCourse ? "inside-course-page" : ""}`}>
         {!selectedCourse ? (
           <section className="landing">
             <div className="welcome-row">
@@ -1216,61 +1382,51 @@ function App() {
                     </div>
                   </>
                 ) : (
-                  <div className="all-done">
-                    <CheckCircle2 size={25} />
-                    <h2>Exam week complete.</h2>
-                    <p>Well done on making it through.</p>
-                  </div>
+                  <div className="all-done"><CheckCircle2 size={25} /><h2>Exam week complete.</h2><p>Well done on making it through.</p></div>
                 )}
               </div>
             </div>
 
-            <div className="courses-heading">
-              <div><span className="eyebrow">YOUR LINEUP</span><h2>Five courses. One clear plan.</h2></div>
-              <span className="course-count">05 COURSES</span>
-            </div>
-
             <div className="course-grid">
-              {courses.map((course) => {
+              {courses.map((course, index) => {
                 const remaining = formatCountdown(course.examAt, now);
-                const countdownLabel = remaining
-                  ? `${remaining.map((part) => `${part.value} ${part.label}`).join(", ")} remaining`
-                  : "Exam time has passed";
+                const countdownLabel = remaining ? `${remaining.map((part) => `${part.value} ${part.label}`).join(", ")} remaining` : "Exam time has passed";
                 return (
-                  <button
-                    className="course-card"
-                    key={course.id}
-                    onClick={() => openCourse(course.id)}
-                    aria-label={`Open ${course.title}. ${countdownLabel}`}
-                  >
-                    <div className="course-card-main"><h3>{course.title}</h3></div>
-                    <div className="course-card-bottom">
-                      <Countdown examAt={course.examAt} now={now} compact />
-                      <span className="course-open"><ArrowUpRight size={17} /></span>
+                  <button className="course-card" key={course.id} onClick={() => openCourse(course.id)} aria-label={`Open ${course.title}. ${countdownLabel}`}>
+                    <div className="course-card-main">
+                      <span className="course-card-index">{String(index + 1).padStart(2, "0")}</span>
+                      <h3>{course.title}</h3>
                     </div>
+                    <div className="course-card-bottom"><Countdown examAt={course.examAt} now={now} compact /><span className="course-open"><ArrowUpRight size={17} /></span></div>
                   </button>
                 );
               })}
             </div>
+
             <footer className="landing-footer">
-              <div className="footer-mark"><GraduationCap size={16} /> <span>exam<span>prep</span></span></div>
+              <div className="footer-mark"><GraduationCap size={16} /><span>exam<span>prep</span></span></div>
               <span>One step at a time.</span>
               <span>All times shown in Ethiopia time · UTC+3</span>
             </footer>
           </section>
         ) : (
           <section className="course-page">
-            <CourseHeader course={selectedCourse} now={now} onBack={goHome} />
+            {!selectedChapter && (
+              <CourseHeader
+                course={selectedCourse}
+                now={now}
+                onBack={goHome}
+                theme={theme}
+                onThemeToggle={() => setTheme((value) => value === "dark" ? "light" : "dark")}
+              />
+            )}
             {selectedCourse.id === "information-assurance" ? (
               selectedChapter ? (
                 <ChapterWorkspace
                   scope={selectedChapter}
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
-                  onBackToChapters={() => {
-                    setSelectedChapter(null);
-                    setSession(null);
-                  }}
+                  onBackToChapters={() => { setSelectedChapter(null); setSession(null); }}
                   quizScope={quizScope}
                   setQuizScope={setQuizScope}
                   quizCount={quizCount}
@@ -1281,17 +1437,19 @@ function App() {
                   setExamCount={setExamCount}
                   session={session}
                   setSession={setSession}
+                  theme={theme}
+                  onThemeToggle={() => setTheme((value) => value === "dark" ? "light" : "dark")}
+                  fontSize={fontSize}
+                  onFontSizeChange={setFontSize}
+                  toneIndex={toneIndex}
+                  onToneChange={setToneIndex}
                 />
               ) : (
                 <ChapterPicker onChoose={openChapter} />
               )
             ) : (
               <div className="course-coming-soon">
-                <EmptyState
-                  icon={<BookOpen size={22} />}
-                  title="This course space is ready"
-                  description="The chapter structure is ready. Once you share the lecture resources, we can build its detailed notes, short notes, summaries, interactive activities and question bank."
-                />
+                <EmptyState icon={<BookOpen size={22} />} title="Course materials are not added yet" description="This course is ready for its lecture notes, summaries, examples and question bank once the source files are supplied." />
                 <button className="secondary-action-button" onClick={goHome}><ArrowLeft size={15} /> Back to all courses</button>
               </div>
             )}
