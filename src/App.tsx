@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { courses } from "./data/courses";
 import { studyContent } from "./data/studyContent";
-import type { CourseId, ExamCourse, StudyTab } from "./types";
+import type { CourseId, ExamCourse, QuizQuestion, StudyTab } from "./types";
 
 const ETHIOPIA_TIME_ZONE = "Africa/Addis_Ababa";
 
@@ -124,6 +124,109 @@ function EmptyState({
   );
 }
 
+
+function QuizSession({
+  courseId,
+  questions,
+}: {
+  courseId: CourseId;
+  questions: QuizQuestion[];
+}) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [score, setScore] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const question = questions[currentIndex];
+
+  const chooseAnswer = (optionIndex: number) => {
+    if (selectedAnswer !== null) return;
+    setSelectedAnswer(optionIndex);
+    if (optionIndex === question.answerIndex) {
+      setScore((currentScore) => currentScore + 1);
+    }
+  };
+
+  const advance = () => {
+    if (currentIndex === questions.length - 1) {
+      setIsComplete(true);
+      return;
+    }
+    setCurrentIndex((index) => index + 1);
+    setSelectedAnswer(null);
+  };
+
+  const restart = () => {
+    setCurrentIndex(0);
+    setSelectedAnswer(null);
+    setScore(0);
+    setIsComplete(false);
+  };
+
+  if (isComplete) {
+    return (
+      <div className="quiz-result-card">
+        <div className="quiz-result-icon"><CheckCircle2 size={25} /></div>
+        <span className="eyebrow">SESSION COMPLETE</span>
+        <h2>{score} <span>/ {questions.length}</span></h2>
+        <p>{score === questions.length ? "Perfect score. Excellent work." : "Every attempt is progress. Review and give it another go."}</p>
+        <button className="quiz-primary-button" onClick={restart}>Try again <ArrowUpRight size={15} /></button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="quiz-panel">
+      <div className="quiz-meta">
+        <span>QUESTION {currentIndex + 1} OF {questions.length}</span>
+        <span>{score} CORRECT</span>
+      </div>
+      <div className="quiz-progress">
+        <span style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }} />
+      </div>
+      <h2 className="quiz-question">{question.question}</h2>
+      <div className="quiz-options">
+        {question.options.map((option, optionIndex) => {
+          const isCorrect = optionIndex === question.answerIndex;
+          const isSelected = selectedAnswer === optionIndex;
+          const stateClass = selectedAnswer === null
+            ? ""
+            : isCorrect
+              ? " correct"
+              : isSelected
+                ? " incorrect"
+                : "";
+          return (
+            <button
+              className={`quiz-option${stateClass}`}
+              key={option}
+              onClick={() => chooseAnswer(optionIndex)}
+              disabled={selectedAnswer !== null}
+              aria-pressed={isSelected}
+            >
+              <span className="option-letter">{String.fromCharCode(65 + optionIndex)}</span>
+              <span>{option}</span>
+              {selectedAnswer !== null && isCorrect && <CheckCircle2 className="option-result" size={17} />}
+            </button>
+          );
+        })}
+      </div>
+      {selectedAnswer !== null && (
+        <div className={`quiz-feedback ${selectedAnswer === question.answerIndex ? "positive" : "negative"}`}>
+          <strong>{selectedAnswer === question.answerIndex ? "That’s correct." : "Not quite."}</strong>
+          <p>{question.explanation ?? "Keep going. You’ll have another chance to practise this topic."}</p>
+        </div>
+      )}
+      <div className="quiz-footer">
+        <span>{currentIndex + 1} of {questions.length}</span>
+        <button className="quiz-primary-button" onClick={advance} disabled={selectedAnswer === null}>
+          {currentIndex === questions.length - 1 ? "See results" : "Next question"}
+          <ArrowUpRight size={15} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function CourseResources({ courseId, tab }: { courseId: CourseId; tab: StudyTab }) {
   const content = studyContent[courseId];
 
@@ -186,15 +289,7 @@ function CourseResources({ courseId, tab }: { courseId: CourseId; tab: StudyTab 
       );
     }
 
-    return (
-      <div className="quiz-ready-card">
-        <div className="quiz-ready-icon"><ListChecks size={22} /></div>
-        <div>
-          <h3>{content.quizzes.length} practice questions prepared</h3>
-          <p>The question set is connected and ready for the interactive quiz experience.</p>
-        </div>
-      </div>
-    );
+    return <QuizSession key={courseId} courseId={courseId} questions={content.quizzes} />;
   }
 
   return null;
