@@ -1,45 +1,91 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
   BookOpen,
   Brain,
   CheckCircle2,
+  ChevronDown,
   Clock3,
   FileText,
   GraduationCap,
   Layers3,
+  LockKeyhole,
+  Play,
+  RotateCcw,
+  ShieldCheck,
   Sparkles,
+  Target,
+  Trophy,
 } from "lucide-react";
 import { courses } from "./data/courses";
-import { studyContent } from "./data/studyContent";
-import type { CourseId, ExamCourse, QuizQuestion, StudyTab } from "./types";
+import { chapter1, chapter2 } from "./data/iasContent";
+import { chapter1QuizBank, chapter2QuizBank } from "./data/iasQuizBank";
+import type {
+  ChapterLearningContent,
+  CourseId,
+  ExamCourse,
+  InteractiveScenario,
+  QuizQuestion,
+  StudyTab,
+  StudyTopic,
+  SummaryTopic,
+} from "./types";
 
 const ETHIOPIA_TIME_ZONE = "Africa/Addis_Ababa";
+type StudyScope = "chapter1" | "chapter2" | "combined";
+type AssessmentMode = "quiz" | "exam";
+type SessionState = {
+  mode: AssessmentMode;
+  scope: StudyScope;
+  questions: QuizQuestion[];
+  count: number;
+};
 
-const tabItems: { id: StudyTab; label: string; icon: typeof BookOpen }[] = [
-  { id: "exam", label: "Exam", icon: Clock3 },
-  { id: "notes", label: "Short notes", icon: FileText },
+const questionCounts = [15, 30, 50, 100] as const;
+const chapterOptions: { id: StudyScope; eyebrow: string; title: string; description: string; icon: typeof BookOpen }[] = [
+  {
+    id: "chapter1",
+    eyebrow: "CHAPTER 01",
+    title: "Introduction",
+    description: "Security foundations, criteria, attacks and the network-security model.",
+    icon: ShieldCheck,
+  },
+  {
+    id: "combined",
+    eyebrow: "FULL REVISION",
+    title: "Combined study",
+    description: "Study, practise or take an assessment across both chapters.",
+    icon: Layers3,
+  },
+  {
+    id: "chapter2",
+    eyebrow: "CHAPTER 02",
+    title: "Computer Threat",
+    description: "Malicious code, attack classes, program flaws and security controls.",
+    icon: LockKeyhole,
+  },
+];
+
+const studyTabs: { id: StudyTab; label: string; icon: typeof BookOpen }[] = [
+  { id: "study-notes", label: "Study notes", icon: BookOpen },
+  { id: "short-notes", label: "Short notes", icon: FileText },
   { id: "summary", label: "Summary", icon: Layers3 },
-  { id: "quizzes", label: "Quizzes", icon: Brain },
+  { id: "interactive", label: "Interactive study", icon: Brain },
+  { id: "quizzes", label: "Quizzes", icon: Target },
 ];
 
 function formatCountdown(examAt: string, now: number) {
   const distance = new Date(examAt).getTime() - now;
-
   if (distance <= 0) return null;
 
   const totalSeconds = Math.floor(distance / 1000);
-  const days = Math.floor(totalSeconds / 86_400);
-  const hours = Math.floor((totalSeconds % 86_400) / 3_600);
-  const minutes = Math.floor((totalSeconds % 3_600) / 60);
-  const seconds = totalSeconds % 60;
-
   return [
-    { value: days, label: "days", short: "d" },
-    { value: hours, label: "hours", short: "h" },
-    { value: minutes, label: "minutes", short: "m" },
-    { value: seconds, label: "seconds", short: "s" },
+    { value: Math.floor(totalSeconds / 86_400), label: "days", short: "d" },
+    { value: Math.floor((totalSeconds % 86_400) / 3_600), label: "hours", short: "h" },
+    { value: Math.floor((totalSeconds % 3_600) / 60), label: "minutes", short: "m" },
+    { value: totalSeconds % 60, label: "seconds", short: "s" },
   ];
 }
 
@@ -53,18 +99,14 @@ function Countdown({
   compact?: boolean;
 }) {
   const parts = formatCountdown(examAt, now);
-
-  if (!parts) {
-    return <span className="exam-started">Exam time passed</span>;
-  }
+  if (!parts) return <span className="exam-started">Exam time passed</span>;
 
   if (compact) {
     return (
       <span className="compact-countdown" aria-label={parts.map((part) => `${part.value} ${part.label}`).join(", ")}>
         {parts.map((part) => (
           <span key={part.short}>
-            {String(part.value).padStart(2, "0")}
-            <small>{part.short}</small>
+            {String(part.value).padStart(2, "0")}<small>{part.short}</small>
           </span>
         ))}
       </span>
@@ -83,6 +125,14 @@ function Countdown({
   );
 }
 
+function formatEthiopiaClock(now: number) {
+  return new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: ETHIOPIA_TIME_ZONE,
+  }).format(new Date(now));
+}
+
 function formatExamDate(examAt: string) {
   return new Intl.DateTimeFormat("en-GB", {
     weekday: "long",
@@ -93,12 +143,25 @@ function formatExamDate(examAt: string) {
   }).format(new Date(examAt));
 }
 
-function formatEthiopiaClock(now: number) {
-  return new Intl.DateTimeFormat("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: ETHIOPIA_TIME_ZONE,
-  }).format(new Date(now));
+function chaptersFor(scope: StudyScope): ChapterLearningContent[] {
+  if (scope === "chapter1") return [chapter1];
+  if (scope === "chapter2") return [chapter2];
+  return [chapter1, chapter2];
+}
+
+function quizBankFor(scope: StudyScope): QuizQuestion[] {
+  if (scope === "chapter1") return chapter1QuizBank;
+  if (scope === "chapter2") return chapter2QuizBank;
+  return [...chapter1QuizBank, ...chapter2QuizBank];
+}
+
+function randomQuestions(bank: QuizQuestion[], count: number): QuizQuestion[] {
+  const shuffled = [...bank];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled.slice(0, Math.min(count, shuffled.length));
 }
 
 function EmptyState({
@@ -106,219 +169,689 @@ function EmptyState({
   title,
   description,
 }: {
-  icon: ReactNode;
+  icon: React.ReactNode;
   title: string;
   description: string;
 }) {
   return (
-    <div className="empty-state">
-      <div className="empty-icon">{icon}</div>
+    <div className="ias-empty-state">
+      <div className="ias-empty-icon">{icon}</div>
       <h3>{title}</h3>
       <p>{description}</p>
-      <span className="content-status">
-        <span className="status-dot" />
-        Ready for your materials
-      </span>
+      <span className="ias-content-ready"><span /> Chapter materials are ready to build on</span>
     </div>
   );
 }
 
+function CourseHeader({
+  course,
+  now,
+  onBack,
+}: {
+  course: ExamCourse;
+  now: number;
+  onBack: () => void;
+}) {
+  return (
+    <>
+      <button className="back-link" onClick={onBack}>
+        <ArrowLeft size={16} /> All courses
+      </button>
+      <div className="course-intro-strip">
+        <div className="course-intro-icon"><GraduationCap size={22} /></div>
+        <div className="course-intro-copy">
+          <span className="eyebrow">YOUR COURSE SPACE</span>
+          <h1>{course.title}</h1>
+        </div>
+        <div className="course-intro-exam">
+          <span>NEXT EXAM</span>
+          <strong>8:00 AM</strong>
+          <small>{formatExamDate(course.examAt)}</small>
+          <Countdown examAt={course.examAt} now={now} compact />
+        </div>
+      </div>
+    </>
+  );
+}
 
-function QuizSession({ questions }: { questions: QuizQuestion[] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [score, setScore] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
-  const question = questions[currentIndex];
+function ChapterPicker({ onChoose }: { onChoose: (scope: StudyScope) => void }) {
+  return (
+    <section className="chapter-picker">
+      <div className="section-heading">
+        <span className="eyebrow"><span className="eyebrow-line" /> CHOOSE YOUR LEARNING PATH</span>
+        <h2>Where shall we begin?</h2>
+        <p>Explore either chapter on its own, or bring everything together for full revision.</p>
+      </div>
 
-  const chooseAnswer = (optionIndex: number) => {
-    if (selectedAnswer !== null) return;
-    setSelectedAnswer(optionIndex);
-    if (optionIndex === question.answerIndex) {
-      setScore((currentScore) => currentScore + 1);
+      <div className="chapter-choice-grid">
+        {chapterOptions.map((option) => {
+          const Icon = option.icon;
+          const isCombined = option.id === "combined";
+          return (
+            <button
+              key={option.id}
+              className={`chapter-choice-card ${isCombined ? "combined-choice" : ""}`}
+              onClick={() => onChoose(option.id)}
+            >
+              <div className="chapter-choice-top">
+                <span className="chapter-choice-icon"><Icon size={21} /></span>
+                <span className="chapter-choice-arrow"><ArrowUpRight size={17} /></span>
+              </div>
+              <span className="chapter-choice-eyebrow">{option.eyebrow}</span>
+              <h3>{option.title}</h3>
+              <p>{option.description}</p>
+              <span className="chapter-choice-action">
+                {isCombined ? "Explore both chapters" : "Open chapter"}
+                <ArrowRight size={14} />
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="chapter-picker-foot">
+        <ShieldCheck size={16} />
+        <span>All chapter materials follow your uploaded lecture slides.</span>
+      </div>
+    </section>
+  );
+}
+
+function TopicGroup({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="topic-group">
+      <div className="topic-group-heading">
+        <span className="eyebrow">{subtitle}</span>
+        <h2>{title}</h2>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function StudyNotesView({ chapters }: { chapters: ChapterLearningContent[] }) {
+  return (
+    <div className="learning-column">
+      {chapters.map((chapter) => (
+        <TopicGroup key={chapter.id} title={chapter.title} subtitle={chapter.subtitle}>
+          <div className="study-topic-list">
+            {chapter.studyNotes.map((topic, index) => (
+              <details className="study-topic-card" key={topic.title} open={index === 0}>
+                <summary>
+                  <span className="topic-number">{String(index + 1).padStart(2, "0")}</span>
+                  <span className="topic-title-wrap">
+                    <strong>{topic.title}</strong>
+                    <small>{topic.overview}</small>
+                  </span>
+                  <ChevronDown size={18} className="topic-chevron" />
+                </summary>
+                <div className="topic-details">
+                  <p className="topic-overview">{topic.overview}</p>
+                  <ul>
+                    {topic.keyPoints.map((point) => <li key={point}>{point}</li>)}
+                  </ul>
+                  {topic.example && (
+                    <div className="topic-example">
+                      <span>EXAMPLE</span>
+                      <p>{topic.example}</p>
+                    </div>
+                  )}
+                  {topic.examFocus && (
+                    <div className="topic-exam-focus">
+                      <Sparkles size={15} />
+                      <p><strong>Exam focus:</strong> {topic.examFocus}</p>
+                    </div>
+                  )}
+                </div>
+              </details>
+            ))}
+          </div>
+        </TopicGroup>
+      ))}
+      <div className="source-coverage-note">
+        <CheckCircle2 size={16} />
+        <span>Detailed notes are organized to follow the topics in the uploaded lecture slides, including the diagrams and tables.</span>
+      </div>
+    </div>
+  );
+}
+
+function ShortNotesView({ chapters }: { chapters: ChapterLearningContent[] }) {
+  return (
+    <div className="learning-column short-note-groups">
+      {chapters.map((chapter) => (
+        <TopicGroup key={chapter.id} title={chapter.title} subtitle="FAST REVISION">
+          <div className="short-note-grid">
+            {chapter.shortNotes.map((topic, index) => (
+              <article className="short-note-card" key={topic.title}>
+                <div className="short-note-number">{String(index + 1).padStart(2, "0")}</div>
+                <h3>{topic.title}</h3>
+                <p>{topic.overview}</p>
+                {topic.keyPoints.length > 0 && (
+                  <ul>{topic.keyPoints.map((point) => <li key={point}>{point}</li>)}</ul>
+                )}
+              </article>
+            ))}
+          </div>
+        </TopicGroup>
+      ))}
+    </div>
+  );
+}
+
+function SummaryView({ chapters }: { chapters: ChapterLearningContent[] }) {
+  return (
+    <div className="learning-column">
+      {chapters.map((chapter) => (
+        <TopicGroup key={chapter.id} title={chapter.title} subtitle="TOPIC MAP">
+          <div className="summary-list">
+            {chapter.summary.map((topic, index) => (
+              <article className="summary-row" key={topic.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div><strong>{topic.title}</strong><p>{topic.description}</p></div>
+              </article>
+            ))}
+          </div>
+        </TopicGroup>
+      ))}
+      <div className="summary-footer-note">
+        <Sparkles size={16} />
+        <span>Use this view to check the chapter structure, then open Study notes for full explanations.</span>
+      </div>
+    </div>
+  );
+}
+
+function InteractiveStudyView({ chapters }: { chapters: ChapterLearningContent[] }) {
+  const scenarios = chapters.flatMap((chapter) =>
+    chapter.interactive.map((scenario) => ({
+      ...scenario,
+      chapterLabel: chapter.id === "chapter1" ? "CHAPTER 01" : "CHAPTER 02",
+    })),
+  );
+  const [activeScenarioId, setActiveScenarioId] = useState(scenarios[0]?.id ?? "");
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const activeScenario = scenarios.find((scenario) => scenario.id === activeScenarioId) ?? scenarios[0];
+
+  useEffect(() => {
+    setActiveScenarioId(scenarios[0]?.id ?? "");
+    setSelectedOption(null);
+  }, [chapters]);
+
+  if (!activeScenario) {
+    return <EmptyState icon={<Brain size={22} />} title="Interactive study is being prepared" description="Scenario-based learning will appear here." />;
+  }
+
+  return (
+    <div className="interactive-layout">
+      <aside className="scenario-sidebar">
+        <div className="scenario-sidebar-heading">
+          <span className="eyebrow">PRACTICE LAB</span>
+          <strong>{scenarios.length} scenarios</strong>
+        </div>
+        {scenarios.map((scenario, index) => (
+          <button
+            key={scenario.id}
+            className={`scenario-nav-item ${scenario.id === activeScenario.id ? "active" : ""}`}
+            onClick={() => {
+              setActiveScenarioId(scenario.id);
+              setSelectedOption(null);
+            }}
+          >
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <div><small>{scenario.chapterLabel}</small><strong>{scenario.title}</strong></div>
+          </button>
+        ))}
+      </aside>
+
+      <section className="scenario-workbench">
+        <div className="scenario-workbench-top">
+          <span className="eyebrow"><span className="live-indicator" /> INTERACTIVE SCENARIO</span>
+          <span className="scenario-source-label">{activeScenario.chapterLabel}</span>
+        </div>
+        <h2>{activeScenario.title}</h2>
+        <div className="scenario-situation">
+          <span>THE SITUATION</span>
+          <p>{activeScenario.situation}</p>
+        </div>
+        <div className="scenario-question">
+          <span>YOUR DECISION</span>
+          <h3>{activeScenario.question}</h3>
+        </div>
+        <div className="scenario-options">
+          {activeScenario.options.map((option, index) => {
+            const isCorrect = index === activeScenario.answerIndex;
+            const isSelected = selectedOption === index;
+            const stateClass = selectedOption === null ? "" : isCorrect ? " correct" : isSelected ? " incorrect" : "";
+            return (
+              <button
+                key={option}
+                className={`scenario-option${stateClass}`}
+                onClick={() => setSelectedOption(index)}
+                disabled={selectedOption !== null}
+                aria-pressed={isSelected}
+              >
+                <span>{String.fromCharCode(65 + index)}</span>
+                <strong>{option}</strong>
+                {selectedOption !== null && isCorrect && <CheckCircle2 size={17} />}
+              </button>
+            );
+          })}
+        </div>
+        {selectedOption !== null && (
+          <div className={`scenario-feedback ${selectedOption === activeScenario.answerIndex ? "correct" : "incorrect"}`}>
+            <strong>{selectedOption === activeScenario.answerIndex ? "Good decision." : "Let's understand why."}</strong>
+            <p>{activeScenario.explanation}</p>
+            <div><Sparkles size={15} /><span>{activeScenario.takeaway}</span></div>
+          </div>
+        )}
+        <div className="scenario-actions">
+          <span>{selectedOption === null ? "Choose the best answer to reveal the explanation." : "Concept explored · You can try another scenario."}</span>
+          <button
+            className="text-action-button"
+            onClick={() => {
+              const currentIndex = scenarios.findIndex((scenario) => scenario.id === activeScenario.id);
+              const next = scenarios[(currentIndex + 1) % scenarios.length];
+              setActiveScenarioId(next.id);
+              setSelectedOption(null);
+            }}
+          >
+            Next scenario <ArrowRight size={15} />
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function QuestionCountPicker({
+  count,
+  onChange,
+  available,
+}: {
+  count: number;
+  onChange: (value: number) => void;
+  available: number;
+}) {
+  return (
+    <div className="question-count-block">
+      <span className="setup-label">NUMBER OF QUESTIONS</span>
+      <div className="count-choice-row">
+        {questionCounts.map((choice) => (
+          <button
+            key={choice}
+            className={`count-choice ${count === choice ? "active" : ""}`}
+            onClick={() => onChange(choice)}
+          >
+            <strong>{choice}</strong>
+            <small>questions</small>
+          </button>
+        ))}
+      </div>
+      <span className="question-pool-caption">{available} questions in this question bank. Each new attempt draws a fresh randomized set.</span>
+    </div>
+  );
+}
+
+function AssessmentSession({
+  session,
+  onRetake,
+  onExit,
+}: {
+  session: SessionState;
+  onRetake: () => void;
+  onExit: () => void;
+}) {
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<number[]>([]);
+  const [finished, setFinished] = useState(false);
+  const currentQuestion = session.questions[questionIndex];
+  const currentAnswer = answers[questionIndex] ?? -1;
+  const score = answers.reduce(
+    (total, answer, index) => total + (answer === session.questions[index]?.answerIndex ? 1 : 0),
+    0,
+  );
+  const percentage = Math.round((score / session.questions.length) * 100);
+
+  const selectAnswer = (optionIndex: number) => {
+    if (currentAnswer !== -1) return;
+    setAnswers((previous) => {
+      const next = [...previous];
+      next[questionIndex] = optionIndex;
+      return next;
+    });
+  };
+
+  const goNext = () => {
+    if (questionIndex === session.questions.length - 1) {
+      setFinished(true);
+    } else {
+      setQuestionIndex((index) => index + 1);
     }
   };
 
-  const advance = () => {
-    if (currentIndex === questions.length - 1) {
-      setIsComplete(true);
-      return;
-    }
-    setCurrentIndex((index) => index + 1);
-    setSelectedAnswer(null);
-  };
-
-  const restart = () => {
-    setCurrentIndex(0);
-    setSelectedAnswer(null);
-    setScore(0);
-    setIsComplete(false);
-  };
-
-  if (isComplete) {
+  if (finished) {
     return (
-      <div className="quiz-result-card">
-        <div className="quiz-result-icon"><CheckCircle2 size={25} /></div>
-        <span className="eyebrow">SESSION COMPLETE</span>
-        <h2>{score} <span>/ {questions.length}</span></h2>
-        <p>{score === questions.length ? "Perfect score. Excellent work." : "Every attempt is progress. Review and give it another go."}</p>
-        <button className="quiz-primary-button" onClick={restart}>Try again <ArrowUpRight size={15} /></button>
+      <div className="assessment-result">
+        <div className="assessment-result-top">
+          <div className="assessment-result-icon"><Trophy size={25} /></div>
+          <span className="eyebrow">{session.mode === "exam" ? "EXAM COMPLETED" : "QUIZ COMPLETED"}</span>
+          <h2>{score}<span> / {session.questions.length}</span></h2>
+          <p className="assessment-percent">{percentage}% correct</p>
+          <p className="assessment-result-message">
+            {percentage >= 85 ? "Excellent work. Your understanding is looking strong." : percentage >= 60 ? "Good progress. Review the explanations for the topics you missed." : "Keep practising. Use the explanations below to strengthen each topic."}
+          </p>
+          <div className="assessment-result-actions">
+            <button className="primary-action-button" onClick={onRetake}><RotateCcw size={15} /> New randomized attempt</button>
+            <button className="secondary-action-button" onClick={onExit}>Back to course</button>
+          </div>
+        </div>
+        <div className="answer-review-heading">
+          <div><span className="eyebrow">ANSWER REVIEW</span><h3>Learn from every question</h3></div>
+          <span>{score} correct · {session.questions.length - score} to review</span>
+        </div>
+        <div className="answer-review-list">
+          {session.questions.map((question, index) => {
+            const isCorrect = answers[index] === question.answerIndex;
+            return (
+              <article className={`answer-review-card ${isCorrect ? "correct" : "incorrect"}`} key={question.id}>
+                <div className="answer-review-status">{isCorrect ? <CheckCircle2 size={16} /> : <span>!</span>}</div>
+                <div>
+                  <small>QUESTION {index + 1}</small>
+                  <h4>{question.question}</h4>
+                  <p><strong>Your answer:</strong> {answers[index] >= 0 ? question.options[answers[index]] : "Not answered"}</p>
+                  {!isCorrect && <p><strong>Correct answer:</strong> {question.options[question.answerIndex]}</p>}
+                  <p className="answer-explanation">{question.explanation}</p>
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="quiz-panel">
-      <div className="quiz-meta">
-        <span>QUESTION {currentIndex + 1} OF {questions.length}</span>
-        <span>{score} CORRECT</span>
-      </div>
-      <div className="quiz-progress">
-        <span style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }} />
-      </div>
-      <h2 className="quiz-question">{question.question}</h2>
-      <div className="quiz-options">
-        {question.options.map((option, optionIndex) => {
-          const isCorrect = optionIndex === question.answerIndex;
-          const isSelected = selectedAnswer === optionIndex;
-          const stateClass = selectedAnswer === null
-            ? ""
-            : isCorrect
-              ? " correct"
-              : isSelected
-                ? " incorrect"
-                : "";
-          return (
-            <button
-              className={`quiz-option${stateClass}`}
-              key={option}
-              onClick={() => chooseAnswer(optionIndex)}
-              disabled={selectedAnswer !== null}
-              aria-pressed={isSelected}
-            >
-              <span className="option-letter">{String.fromCharCode(65 + optionIndex)}</span>
-              <span>{option}</span>
-              {selectedAnswer !== null && isCorrect && <CheckCircle2 className="option-result" size={17} />}
-            </button>
-          );
-        })}
-      </div>
-      {selectedAnswer !== null && (
-        <div className={`quiz-feedback ${selectedAnswer === question.answerIndex ? "positive" : "negative"}`}>
-          <strong>{selectedAnswer === question.answerIndex ? "That’s correct." : "Not quite."}</strong>
-          <p>{question.explanation ?? "Keep going. You’ll have another chance to practise this topic."}</p>
+    <div className="assessment-session">
+      <div className="assessment-session-top">
+        <div>
+          <span className="eyebrow">{session.mode === "exam" ? "ASSESSMENT MODE" : "PRACTICE MODE"}</span>
+          <h2>{session.mode === "exam" ? "Chapter exam" : "Question practice"}</h2>
+          <p>{session.mode === "exam" ? "Complete every question. Your score and explanations appear at the end." : "Choose an answer to see immediate feedback and a short explanation."}</p>
         </div>
-      )}
-      <div className="quiz-footer">
-        <span>{currentIndex + 1} of {questions.length}</span>
-        <button className="quiz-primary-button" onClick={advance} disabled={selectedAnswer === null}>
-          {currentIndex === questions.length - 1 ? "See results" : "Next question"}
-          <ArrowUpRight size={15} />
+        <button className="quiet-icon-button" onClick={onExit} aria-label="Exit assessment"><ArrowLeft size={18} /></button>
+      </div>
+      <div className="assessment-progress-row">
+        <span>QUESTION {questionIndex + 1} <small>OF {session.questions.length}</small></span>
+        <span>{answers.filter((answer) => answer !== undefined).length} ANSWERED</span>
+      </div>
+      <div className="assessment-progress-track"><span style={{ width: `${((questionIndex + 1) / session.questions.length) * 100}%` }} /></div>
+      <div className="assessment-question-card">
+        <h3>{currentQuestion.question}</h3>
+        <div className="assessment-options">
+          {currentQuestion.options.map((option, optionIndex) => {
+            const isSelected = currentAnswer === optionIndex;
+            const isCorrect = optionIndex === currentQuestion.answerIndex;
+            const stateClass = currentAnswer === -1
+              ? ""
+              : session.mode === "quiz" && isCorrect
+                ? " correct"
+                : session.mode === "quiz" && isSelected
+                  ? " incorrect"
+                  : isSelected
+                    ? " selected"
+                    : "";
+            return (
+              <button
+                key={option}
+                className={`assessment-option${stateClass}`}
+                onClick={() => selectAnswer(optionIndex)}
+                disabled={currentAnswer !== -1}
+                aria-pressed={isSelected}
+              >
+                <span>{String.fromCharCode(65 + optionIndex)}</span>
+                <strong>{option}</strong>
+                {session.mode === "quiz" && currentAnswer !== -1 && isCorrect && <CheckCircle2 size={17} />}
+              </button>
+            );
+          })}
+        </div>
+        {session.mode === "quiz" && currentAnswer !== -1 && (
+          <div className={`instant-feedback ${currentAnswer === currentQuestion.answerIndex ? "correct" : "incorrect"}`}>
+            <strong>{currentAnswer === currentQuestion.answerIndex ? "Correct answer." : "Not quite — review this point."}</strong>
+            <p>{currentQuestion.explanation}</p>
+          </div>
+        )}
+      </div>
+      <div className="assessment-session-footer">
+        <button className="secondary-action-button" onClick={onExit}>Exit</button>
+        <button className="primary-action-button" onClick={goNext} disabled={currentAnswer === -1}>
+          {questionIndex === session.questions.length - 1 ? "Finish and see results" : "Next question"}
+          <ArrowRight size={15} />
         </button>
       </div>
     </div>
   );
 }
 
-function CourseResources({ courseId, tab }: { courseId: CourseId; tab: StudyTab }) {
-  const content = studyContent[courseId];
-
-  if (tab === "notes") {
-    if (content.shortNotes.length === 0) {
-      return (
-        <EmptyState
-          icon={<FileText size={21} />}
-          title="Your short notes will live here"
-          description="Concise, exam-focused notes will be organized here as you share the course resources."
-        />
-      );
-    }
-
-    return (
-      <div className="resource-stack">
-        {content.shortNotes.map((section) => (
-          <article className="resource-card" key={section.title}>
-            <h3>{section.title}</h3>
-            <p>{section.body}</p>
-          </article>
-        ))}
-      </div>
-    );
-  }
-
-  if (tab === "summary") {
-    if (content.summary.length === 0) {
-      return (
-        <EmptyState
-          icon={<Layers3 size={21} />}
-          title="A clear summary, coming together"
-          description="The essential ideas from your materials will be collected here for quick revision."
-        />
-      );
-    }
-
-    return (
-      <div className="resource-stack">
-        {content.summary.map((section) => (
-          <article className="resource-card" key={section.title}>
-            <h3>{section.title}</h3>
-            <ul className="summary-points">
-              {section.points.map((point) => <li key={point}>{point}</li>)}
-            </ul>
-          </article>
-        ))}
-      </div>
-    );
-  }
-
-  if (tab === "quizzes") {
-    if (content.quizzes.length === 0) {
-      return (
-        <EmptyState
-          icon={<Brain size={21} />}
-          title="Practice will be interactive"
-          description="Course questions, answer feedback, and explanations will appear here when we add your study materials."
-        />
-      );
-    }
-
-    return <QuizSession key={courseId} questions={content.quizzes} />;
-  }
-
-  return null;
-}
-
-function ExamOverview({ course, now }: { course: ExamCourse; now: number }) {
-  const hasStarted = new Date(course.examAt).getTime() <= now;
+function AssessmentSetup({
+  mode,
+  currentScope,
+  allowScopeChoice,
+  onScopeChange,
+  count,
+  onCountChange,
+  onStart,
+}: {
+  mode: AssessmentMode;
+  currentScope: StudyScope;
+  allowScopeChoice: boolean;
+  onScopeChange: (scope: StudyScope) => void;
+  count: number;
+  onCountChange: (count: number) => void;
+  onStart: () => void;
+}) {
+  const bankLength = quizBankFor(currentScope).length;
+  const isExam = mode === "exam";
 
   return (
-    <div className="exam-overview">
-      <div className="exam-countdown-panel">
-        <div className="panel-topline">
-          <span className="eyebrow">{hasStarted ? "EXAM TIME" : "COUNTING DOWN TO YOUR EXAM"}</span>
-          <span className="timezone-label"><Clock3 size={13} /> ETHIOPIA TIME</span>
-        </div>
-        <Countdown examAt={course.examAt} now={now} />
-        <div className="exam-date-line">
-          <span>{formatExamDate(course.examAt)}</span>
-          <strong>8:00 AM</strong>
+    <div className="assessment-setup">
+      <div className="assessment-setup-hero">
+        <div className="assessment-setup-icon">{isExam ? <GraduationCap size={23} /> : <Target size={23} />}</div>
+        <div>
+          <span className="eyebrow">{isExam ? "TEST YOUR UNDERSTANDING" : "BUILD YOUR CONFIDENCE"}</span>
+          <h2>{isExam ? "Take an exam" : "Create a practice quiz"}</h2>
+          <p>{isExam ? "A complete assessment with results and explanations after the final question." : "Pick your question count. Questions and answer positions are shuffled for every new attempt."}</p>
         </div>
       </div>
-      <div className="exam-note-card">
-        <div className="note-card-icon"><Sparkles size={18} /></div>
-        <div>
-          <h3>Your preparation space</h3>
-          <p>Short notes, focused summaries, and practice quizzes for this course will be added here as we work through your resources.</p>
+
+      {allowScopeChoice && (
+        <div className="scope-picker-block">
+          <span className="setup-label">{isExam ? "CHOOSE EXAM SCOPE" : "CHOOSE QUIZ SCOPE"}</span>
+          <div className="scope-choice-row">
+            {([
+              ["chapter1", "Chapter 1"],
+              ["chapter2", "Chapter 2"],
+              ["combined", "Both chapters"],
+            ] as [StudyScope, string][]).map(([scope, label]) => (
+              <button
+                key={scope}
+                className={`scope-choice ${currentScope === scope ? "active" : ""}`}
+                onClick={() => onScopeChange(scope)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
+      )}
+
+      <QuestionCountPicker count={count} onChange={onCountChange} available={bankLength} />
+
+      <div className="assessment-setup-bottom">
+        <div className="assessment-mode-note">
+          <ShieldCheck size={17} />
+          <span>{isExam ? "No timer has been imposed because the lecture files do not specify an exam duration." : "Immediate feedback is shown after each answer."}</span>
+        </div>
+        <button className="primary-action-button start-assessment-button" onClick={onStart}>
+          <Play size={15} fill="currentColor" /> {isExam ? "Start exam" : "Start quiz"} <ArrowUpRight size={15} />
+        </button>
       </div>
     </div>
+  );
+}
+
+function ChapterWorkspace({
+  scope,
+  activeTab,
+  setActiveTab,
+  onBackToChapters,
+  quizScope,
+  setQuizScope,
+  quizCount,
+  setQuizCount,
+  examScope,
+  setExamScope,
+  examCount,
+  setExamCount,
+  session,
+  setSession,
+}: {
+  scope: StudyScope;
+  activeTab: StudyTab;
+  setActiveTab: (tab: StudyTab) => void;
+  onBackToChapters: () => void;
+  quizScope: StudyScope;
+  setQuizScope: (scope: StudyScope) => void;
+  quizCount: number;
+  setQuizCount: (count: number) => void;
+  examScope: StudyScope;
+  setExamScope: (scope: StudyScope) => void;
+  examCount: number;
+  setExamCount: (count: number) => void;
+  session: SessionState | null;
+  setSession: (session: SessionState | null) => void;
+}) {
+  const chapterGroups = chaptersFor(scope);
+  const isCombined = scope === "combined";
+  const chapterName = scope === "chapter1" ? "Chapter 1 · Introduction" : scope === "chapter2" ? "Chapter 2 · Computer Threat" : "Combined study";
+
+  const begin = (mode: AssessmentMode, selectedScope: StudyScope, count: number) => {
+    const bank = quizBankFor(selectedScope);
+    const questions = randomQuestions(bank, count);
+    setSession({ mode, scope: selectedScope, questions, count: questions.length });
+  };
+
+  const retake = () => {
+    if (!session) return;
+    begin(session.mode, session.scope, session.count);
+  };
+
+  return (
+    <section className="chapter-workspace">
+      <div className="workspace-breadcrumb">
+        <button className="back-link" onClick={onBackToChapters}><ArrowLeft size={15} /> Chapters</button>
+        <span>{chapterName}</span>
+      </div>
+
+      <div className="workspace-title-row">
+        <div className="workspace-title-icon"><BookOpen size={22} /></div>
+        <div className="workspace-title-copy">
+          <span className="eyebrow">{isCombined ? "COMPLETE REVISION SPACE" : scope === "chapter1" ? "CHAPTER 01" : "CHAPTER 02"}</span>
+          <h1>{isCombined ? "Study both chapters" : scope === "chapter1" ? chapter1.title : chapter2.title}</h1>
+          <p>{isCombined ? "Everything from Introduction and Computer Threat, in one connected learning space." : scope === "chapter1" ? "Build a clear foundation in information assurance and security." : "Understand malicious code, attack methods and security controls."}</p>
+        </div>
+        <button
+          className="workspace-exam-button"
+          onClick={() => {
+            setSession(null);
+            setActiveTab("exam");
+            if (scope !== "combined") setExamScope(scope);
+            else setExamScope("combined");
+          }}
+        >
+          <GraduationCap size={16} /> Take exam
+        </button>
+      </div>
+
+      <nav className="ias-study-tabs" aria-label="Study sections">
+        {studyTabs.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              className={`ias-study-tab ${activeTab === tab.id ? "active" : ""}`}
+              onClick={() => {
+                setSession(null);
+                setActiveTab(tab.id);
+              }}
+              aria-current={activeTab === tab.id ? "page" : undefined}
+            >
+              <Icon size={16} />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <div className="ias-tab-content">
+        {activeTab === "study-notes" && <StudyNotesView chapters={chapterGroups} />}
+        {activeTab === "short-notes" && <ShortNotesView chapters={chapterGroups} />}
+        {activeTab === "summary" && <SummaryView chapters={chapterGroups} />}
+        {activeTab === "interactive" && <InteractiveStudyView chapters={chapterGroups} />}
+        {activeTab === "quizzes" && (
+          session ? (
+            <AssessmentSession session={session} onRetake={retake} onExit={() => setSession(null)} />
+          ) : (
+            <AssessmentSetup
+              mode="quiz"
+              currentScope={isCombined ? quizScope : scope}
+              allowScopeChoice={isCombined}
+              onScopeChange={setQuizScope}
+              count={quizCount}
+              onCountChange={setQuizCount}
+              onStart={() => begin("quiz", isCombined ? quizScope : scope, quizCount)}
+            />
+          )
+        )}
+        {activeTab === "exam" && (
+          session ? (
+            <AssessmentSession session={session} onRetake={retake} onExit={() => setSession(null)} />
+          ) : (
+            <AssessmentSetup
+              mode="exam"
+              currentScope={isCombined ? examScope : scope}
+              allowScopeChoice={isCombined}
+              onScopeChange={setExamScope}
+              count={examCount}
+              onCountChange={setExamCount}
+              onStart={() => begin("exam", isCombined ? examScope : scope, examCount)}
+            />
+          )
+        )}
+      </div>
+    </section>
   );
 }
 
 function App() {
   const [now, setNow] = useState(() => Date.now());
   const [selectedCourseId, setSelectedCourseId] = useState<CourseId | null>(null);
-  const [activeTab, setActiveTab] = useState<StudyTab>("exam");
+  const [selectedChapter, setSelectedChapter] = useState<StudyScope | null>(null);
+  const [activeTab, setActiveTab] = useState<StudyTab>("study-notes");
+  const [quizScope, setQuizScope] = useState<StudyScope>("combined");
+  const [examScope, setExamScope] = useState<StudyScope>("combined");
+  const [quizCount, setQuizCount] = useState(15);
+  const [examCount, setExamCount] = useState(15);
+  const [session, setSession] = useState<SessionState | null>(null);
 
   useEffect(() => {
     const interval = window.setInterval(() => setNow(Date.now()), 1000);
@@ -329,20 +862,36 @@ function App() {
     () => courses.find((course) => new Date(course.examAt).getTime() > now),
     [now],
   );
-
   const selectedCourse = selectedCourseId
     ? courses.find((course) => course.id === selectedCourseId) ?? null
     : null;
 
   const openCourse = (courseId: CourseId) => {
     setSelectedCourseId(courseId);
-    setActiveTab("exam");
+    setSelectedChapter(null);
+    setSession(null);
+    setActiveTab("study-notes");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const goHome = () => {
     setSelectedCourseId(null);
-    setActiveTab("exam");
+    setSelectedChapter(null);
+    setSession(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const openChapter = (scope: StudyScope) => {
+    setSelectedChapter(scope);
+    setSession(null);
+    setActiveTab("study-notes");
+    if (scope === "combined") {
+      setQuizScope("combined");
+      setExamScope("combined");
+    } else {
+      setQuizScope(scope);
+      setExamScope(scope);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -361,46 +910,7 @@ function App() {
       </header>
 
       <main className="page-content">
-        {selectedCourse ? (
-          <section className="workspace">
-            <button className="back-link" onClick={goHome}>
-              <ArrowLeft size={16} /> All courses
-            </button>
-
-            <div className="workspace-heading">
-              <div className="workspace-icon"><BookOpen size={22} /></div>
-              <div>
-                <span className="eyebrow">YOUR STUDY SPACE</span>
-                <h1>{selectedCourse.title}</h1>
-              </div>
-            </div>
-
-            <nav className="study-tabs" aria-label="Course study sections">
-              {tabItems.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    className={`study-tab ${activeTab === tab.id ? "active" : ""}`}
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    aria-current={activeTab === tab.id ? "page" : undefined}
-                  >
-                    <Icon size={16} strokeWidth={1.9} />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-
-            <div className="tab-content">
-              {activeTab === "exam" ? (
-                <ExamOverview course={selectedCourse} now={now} />
-              ) : (
-                <CourseResources courseId={selectedCourse.id} tab={activeTab} />
-              )}
-            </div>
-          </section>
-        ) : (
+        {!selectedCourse ? (
           <section className="landing">
             <div className="welcome-row">
               <div className="welcome-copy">
@@ -408,7 +918,6 @@ function App() {
                 <h1>A little more focus.<br /><span>A lot more confidence.</span></h1>
                 <p>Everything you need for this exam week, gathered in one calm, clear space.</p>
               </div>
-
               <div className="next-exam-card">
                 <div className="next-card-top">
                   <span className="eyebrow">UP NEXT</span>
@@ -421,9 +930,7 @@ function App() {
                     <Countdown examAt={nextCourse.examAt} now={now} />
                     <div className="next-card-footer">
                       <span><Clock3 size={14} /> Next exam · 8:00 AM EAT</span>
-                      <button onClick={() => openCourse(nextCourse.id)} aria-label={`Open ${nextCourse.title}`}>
-                        Prepare <ArrowUpRight size={14} />
-                      </button>
+                      <button onClick={() => openCourse(nextCourse.id)}>Prepare <ArrowUpRight size={14} /></button>
                     </div>
                   </>
                 ) : (
@@ -437,10 +944,7 @@ function App() {
             </div>
 
             <div className="courses-heading">
-              <div>
-                <span className="eyebrow">YOUR LINEUP</span>
-                <h2>Five courses. One clear plan.</h2>
-              </div>
+              <div><span className="eyebrow">YOUR LINEUP</span><h2>Five courses. One clear plan.</h2></div>
               <span className="course-count">05 COURSES</span>
             </div>
 
@@ -450,7 +954,6 @@ function App() {
                 const countdownLabel = remaining
                   ? `${remaining.map((part) => `${part.value} ${part.label}`).join(", ")} remaining`
                   : "Exam time has passed";
-
                 return (
                   <button
                     className="course-card"
@@ -458,9 +961,7 @@ function App() {
                     onClick={() => openCourse(course.id)}
                     aria-label={`Open ${course.title}. ${countdownLabel}`}
                   >
-                    <div className="course-card-main">
-                      <h3>{course.title}</h3>
-                    </div>
+                    <div className="course-card-main"><h3>{course.title}</h3></div>
                     <div className="course-card-bottom">
                       <Countdown examAt={course.examAt} now={now} compact />
                       <span className="course-open"><ArrowUpRight size={17} /></span>
@@ -469,12 +970,49 @@ function App() {
                 );
               })}
             </div>
-
             <footer className="landing-footer">
               <div className="footer-mark"><GraduationCap size={16} /> <span>exam<span>prep</span></span></div>
               <span>One step at a time.</span>
               <span>All times shown in Ethiopia time · UTC+3</span>
             </footer>
+          </section>
+        ) : (
+          <section className="course-page">
+            <CourseHeader course={selectedCourse} now={now} onBack={goHome} />
+            {selectedCourse.id === "information-assurance" ? (
+              selectedChapter ? (
+                <ChapterWorkspace
+                  scope={selectedChapter}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  onBackToChapters={() => {
+                    setSelectedChapter(null);
+                    setSession(null);
+                  }}
+                  quizScope={quizScope}
+                  setQuizScope={setQuizScope}
+                  quizCount={quizCount}
+                  setQuizCount={setQuizCount}
+                  examScope={examScope}
+                  setExamScope={setExamScope}
+                  examCount={examCount}
+                  setExamCount={setExamCount}
+                  session={session}
+                  setSession={setSession}
+                />
+              ) : (
+                <ChapterPicker onChoose={openChapter} />
+              )
+            ) : (
+              <div className="course-coming-soon">
+                <EmptyState
+                  icon={<BookOpen size={22} />}
+                  title="This course space is ready"
+                  description="The chapter structure is ready. Once you share the lecture resources, we can build its detailed notes, short notes, summaries, interactive activities and question bank."
+                />
+                <button className="secondary-action-button" onClick={goHome}><ArrowLeft size={15} /> Back to all courses</button>
+              </div>
+            )}
           </section>
         )}
       </main>
