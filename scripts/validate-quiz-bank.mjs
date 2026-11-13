@@ -19,11 +19,6 @@ function decodeQuoted(value) {
   return JSON.parse(`"${value}"`);
 }
 
-function fail(message) {
-  console.error(`Question-bank validation failed: ${message}`);
-  process.exitCode = 1;
-}
-
 const totals = { "Chapter 1": 0, "Chapter 2": 0 };
 const problems = [];
 
@@ -35,7 +30,7 @@ for (const { name, chapter } of seedArrays) {
     continue;
   }
 
-  const end = source.indexOf("\\n];", start);
+  const end = source.indexOf("\n];", start);
   if (end === -1) {
     problems.push(`Could not find the end of question array: ${name}`);
     continue;
