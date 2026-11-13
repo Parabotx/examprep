@@ -334,7 +334,10 @@ function FullscreenToggle() {
   const toggle = async () => {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
-      else await document.documentElement.requestFullscreen();
+      else {
+        const reader = document.querySelector<HTMLElement>(".reader-experience");
+        await (reader ?? document.documentElement).requestFullscreen();
+      }
     } catch {
       // Full-screen mode is optional; keep the reading layout usable if blocked.
     }
@@ -1167,7 +1170,7 @@ function ChapterWorkspace({
         </div>
       )}
 
-      <nav className={`ias-study-tabs compact ${activeTab === "study-notes" ? "reader-tabs" : ""}`} aria-label="Study sections">
+      {activeTab !== "study-notes" && <nav className="ias-study-tabs compact" aria-label="Study sections">
         {studyTabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -1183,7 +1186,7 @@ function ChapterWorkspace({
         })}
         {activeTab === "quizzes" && <span className="tab-utility-label">PRACTICE</span>}
         {activeTab === "exam" && <span className="tab-utility-label">ASSESSMENT</span>}
-      </nav>
+      </nav>}
 
       {activeTab === "study-notes" && (
         <StudyNotesView
