@@ -4372,7 +4372,7 @@ button:focus-visible {
 .reader-experience {
   --reader-scale: 1;
   width: min(960px, 100%);
-  min-height: min(720px, calc(100vh - 145px));
+  min-height: calc(100vh - 142px);
   margin: 0 auto;
   padding: 14px 16px 17px;
   border: 1px solid rgba(227, 230, 241, 0.94);
@@ -5018,4 +5018,21 @@ button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .reader-topic-card { animation: none !important; }
   .reader-progress-track > span { transition: none !important; }
+}
+
+
+.reader-experience:fullscreen {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 18px clamp(18px, 4vw, 54px);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.reader-experience:fullscreen .reader-topic-card {
+  width: min(920px, 100%);
+  padding-top: clamp(28px, 6vh, 70px);
+  padding-bottom: clamp(28px, 6vh, 70px);
 }
