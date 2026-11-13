@@ -445,22 +445,29 @@ function App() {
             </div>
 
             <div className="course-grid">
-              {courses.map((course) => (
-                <button
-                  className="course-card"
-                  key={course.id}
-                  onClick={() => openCourse(course.id)}
-                  aria-label={`Open ${course.title}. ${formatCountdown(course.examAt, now)?.map((part) => `${part.value} ${part.label}`).join(", ") ?? "Exam time"} remaining`}
-                >
-                  <div className="course-card-main">
-                    <h3>{course.title}</h3>
-                  </div>
-                  <div className="course-card-bottom">
-                    <Countdown examAt={course.examAt} now={now} compact />
-                    <span className="course-open"><ArrowUpRight size={17} /></span>
-                  </div>
-                </button>
-              ))}
+              {courses.map((course) => {
+                const remaining = formatCountdown(course.examAt, now);
+                const countdownLabel = remaining
+                  ? `${remaining.map((part) => `${part.value} ${part.label}`).join(", ")} remaining`
+                  : "Exam time has passed";
+
+                return (
+                  <button
+                    className="course-card"
+                    key={course.id}
+                    onClick={() => openCourse(course.id)}
+                    aria-label={`Open ${course.title}. ${countdownLabel}`}
+                  >
+                    <div className="course-card-main">
+                      <h3>{course.title}</h3>
+                    </div>
+                    <div className="course-card-bottom">
+                      <Countdown examAt={course.examAt} now={now} compact />
+                      <span className="course-open"><ArrowUpRight size={17} /></span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             <footer className="landing-footer">
