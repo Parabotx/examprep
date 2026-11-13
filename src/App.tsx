@@ -1250,30 +1250,6 @@ function App() {
   const [quizCount, setQuizCount] = useState(15);
   const [examCount, setExamCount] = useState(15);
   const [session, setSession] = useState<SessionState | null>(null);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(SAVED_STUDY_STATE_KEY, JSON.stringify({
-        selectedCourseId,
-        selectedChapter,
-        activeTab,
-        quizScope,
-        examScope,
-      }));
-    } catch {
-      // Navigation remains fully usable when browser storage is unavailable.
-    }
-  }, [selectedCourseId, selectedChapter, activeTab, quizScope, examScope])function App() {
-  const [now, setNow] = useState(() => Date.now());
-  const [restoredState] = useState(readSavedStudyState);
-  const [selectedCourseId, setSelectedCourseId] = useState<CourseId | null>(() => restoredState?.selectedCourseId ?? null);
-  const [selectedChapter, setSelectedChapter] = useState<StudyScope | null>(() => restoredState?.selectedChapter ?? null);
-  const [activeTab, setActiveTab] = useState<StudyTab>(() => restoredState?.activeTab ?? "study-notes");
-  const [quizScope, setQuizScope] = useState<StudyScope>(() => restoredState?.quizScope ?? "combined");
-  const [examScope, setExamScope] = useState<StudyScope>(() => restoredState?.examScope ?? "combined");
-  const [quizCount, setQuizCount] = useState(15);
-  const [examCount, setExamCount] = useState(15);
-  const [session, setSession] = useState<SessionState | null>(null);
   const [theme, setTheme] = useState<ThemeMode>(readSavedTheme);
   const [fontSize, setFontSize] = useState(readSavedReaderSize);
   const [toneIndex, setToneIndex] = useState(readSavedReadingTone);
