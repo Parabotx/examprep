@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -107,7 +107,7 @@ function EmptyState({
   title,
   description,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
 }) {
@@ -357,7 +357,7 @@ function App() {
             </div>
 
             <div className="course-grid">
-              {courses.map((course, index) => (
+              {courses.map((course) => (
                 <button
                   className="course-card"
                   key={course.id}
@@ -365,7 +365,6 @@ function App() {
                   aria-label={`Open ${course.title}. ${formatCountdown(course.examAt, now)?.map((part) => `${part.value} ${part.label}`).join(", ") ?? "Exam time"} remaining`}
                 >
                   <div className="course-card-main">
-                    <span className="course-index">{String(index + 1).padStart(2, "0")}</span>
                     <h3>{course.title}</h3>
                   </div>
                   <div className="course-card-bottom">
