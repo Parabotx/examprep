@@ -31,6 +31,8 @@ export interface QuizQuestion {
   options: string[];
   answerIndex: number;
   explanation: string;
+  /** Explanations stay aligned with options when answer choices are shuffled. */
+  optionExplanations: string[];
   topic: string;
 }
 
