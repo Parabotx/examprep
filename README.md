@@ -9,7 +9,14 @@ npm install
 npm run dev
 ```
 
-Create and verify a production build:
+Validate the lecture question banks and verify a production build:
+
+```bash
+npm test
+npm run build
+```
+
+Preview a production build:
 
 ```bash
 npm run build
@@ -23,8 +30,10 @@ npm run preview
 - Each learning path provides Study Notes, Short Notes, Summary, Interactive Study and Quizzes, with a separate exam mode.
 - Chapter 1 and Chapter 2 content is kept in `src/data/iasContent.ts`.
 - Randomized multiple-choice questions are kept in `src/data/iasQuizBank.ts`. Each chapter has more than 100 questions; practice and exam sessions support 15, 30, 50 or 100 questions.
-- A fresh attempt shuffles the question selection, order and answer choices.
-- Quiz mode provides immediate feedback. Exam mode reveals the result and explanations after the last answer.
+- A fresh attempt shuffles the question selection, order and answer choices while keeping each option matched to its explanation.
+- Quiz and exam modes both reveal the correct answer immediately, explain the reasoning for all four options, and provide a complete review at the end.
+- Keyboard users can select answers with keys 1–4; assessment progress is announced to assistive technologies.
+- The last course, chapter, study section, question scope and reading background are remembered on the same browser. Assessment answers are not stored.
 
 ## Adding course material
 
