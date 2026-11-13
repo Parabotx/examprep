@@ -3987,3 +3987,26 @@ button:focus-visible {
     animation: none !important;
   }
 }
+
+
+/* Small usability refinements for keyboard and assistive-technology users. */
+.assessment-keyboard-hint {
+  margin: 11px 0 0;
+  color: #969caf;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.65px;
+}
+
+.assessment-options button:focus-visible,
+.assessment-session-footer button:focus-visible {
+  outline: 3px solid rgba(111, 117, 213, 0.28);
+  outline-offset: 3px;
+}
+
+@media (max-width: 580px) {
+  .assessment-keyboard-hint {
+    font-size: 8px;
+    line-height: 1.5;
+  }
+}
