@@ -48,6 +48,56 @@ type TopicPerformance = {
   total: number;
 };
 
+const SAVED_STUDY_STATE_KEY = "examprep:study-state";
+const SAVED_READING_TONE_KEY = "examprep:reading-tone";
+
+type SavedStudyState = {
+  selectedCourseId: CourseId | null;
+  selectedChapter: StudyScope | null;
+  activeTab: StudyTab;
+  quizScope: StudyScope;
+  examScope: StudyScope;
+};
+
+function readSavedStudyState(): SavedStudyState | null {
+  try {
+    const raw = window.localStorage.getItem(SAVED_STUDY_STATE_KEY);
+    if (!raw) return null;
+    const value = JSON.parse(raw) as Partial<SavedStudyState>;
+    const validScopes: StudyScope[] = ["chapter1", "chapter2", "combined"];
+    const validTabs: StudyTab[] = ["study-notes", "short-notes", "summary", "interactive", "quizzes", "exam"];
+    const validCourseIds: CourseId[] = [
+      "information-assurance",
+      "research-methods",
+      "information-retrieval",
+      "artificial-intelligence",
+      "network-devices",
+    ];
+    return {
+      selectedCourseId: value.selectedCourseId && validCourseIds.includes(value.selectedCourseId)
+        ? value.selectedCourseId
+        : null,
+      selectedChapter: value.selectedChapter && validScopes.includes(value.selectedChapter)
+        ? value.selectedChapter
+        : null,
+      activeTab: value.activeTab && validTabs.includes(value.activeTab) ? value.activeTab : "study-notes",
+      quizScope: value.quizScope && validScopes.includes(value.quizScope) ? value.quizScope : "combined",
+      examScope: value.examScope && validScopes.includes(value.examScope) ? value.examScope : "combined",
+    };
+  } catch {
+    return null;
+  }
+}
+
+function readSavedReadingTone(): number {
+  try {
+    const value = Number(window.localStorage.getItem(SAVED_READING_TONE_KEY));
+    return Number.isInteger(value) && value >= 0 && value < 4 ? value : 0;
+  } catch {
+    return 0;
+  }
+}
+
 const readingTones = [
   { id: "paper", label: "Warm paper", swatch: "#faf7ef" },
   { id: "mist", label: "Cool mist", swatch: "#f0f5f8" },
@@ -725,7 +775,17 @@ function AssessmentSession({
   }
 
   return (
-    <div className="assessment-session">
+    <div
+      className="assessment-session"
+      onKeyDown={(event) => {
+        const target = event.target as HTMLElement;
+        if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+        if (/^[1-4]$/.test(event.key)) {
+          event.preventDefault();
+          selectAnswer(Number(event.key) - 1);
+        }
+      }}
+    >
       <div className="assessment-session-top">
         <div>
           <span className="eyebrow">{session.mode === "exam" ? "ASSESSMENT MODE" : "PRACTICE MODE"}</span>
@@ -738,10 +798,10 @@ function AssessmentSession({
         <span>QUESTION {questionIndex + 1} <small>OF {session.questions.length}</small></span>
         <span>{answers.filter((answer) => answer >= 0).length} ANSWERED</span>
       </div>
-      <div className="assessment-progress-track"><span style={{ width: `${((questionIndex + 1) / session.questions.length) * 100}%` }} /></div>
+      <div className="assessment-progress-track" role="progressbar" aria-label="Assessment progress" aria-valuemin={1} aria-valuemax={session.questions.length} aria-valuenow={questionIndex + 1}><span style={{ width: `${((questionIndex + 1) / session.questions.length) * 100}%` }} /></div>
       <div className="assessment-question-card">
         <h3>{currentQuestion.question}</h3>
-        <div className="assessment-options">
+        <div className="assessment-options" role="group" aria-label="Answer choices">
           {currentQuestion.options.map((option, optionIndex) => {
             const isSelected = currentAnswer === optionIndex;
             const isCorrect = optionIndex === currentQuestion.answerIndex;
@@ -768,8 +828,9 @@ function AssessmentSession({
             );
           })}
         </div>
+        <p className="assessment-keyboard-hint">KEYBOARD TIP · Press 1, 2, 3 or 4 to choose an answer.</p>
         {currentAnswer !== -1 && (
-          <div className={`instant-feedback ${currentAnswer === currentQuestion.answerIndex ? "correct" : "incorrect"}`}>
+          <div role="status" aria-live="polite" className={`instant-feedback ${currentAnswer === currentQuestion.answerIndex ? "correct" : "incorrect"}`}>
             <div className="instant-feedback-summary">
               <div><span>YOUR ANSWER</span><strong><HighlightedText text={currentQuestion.options[currentAnswer]} /></strong></div>
               <div><span>CORRECT ANSWER</span><strong><HighlightedText text={currentQuestion.options[currentQuestion.answerIndex]} /></strong></div>
@@ -892,9 +953,18 @@ function ChapterWorkspace({
   setSession: (session: SessionState | null) => void;
 }) {
   const chapterGroups = useMemo(() => chaptersFor(scope), [scope]);
-  const [readingToneIndex, setReadingToneIndex] = useState(0);
+  const [readingToneIndex, setReadingToneIndex] = useState(readSavedReadingTone);
   const isCombined = scope === "combined";
   const activeReadingTone = readingTones[readingToneIndex];
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SAVED_READING_TONE_KEY, String(readingToneIndex));
+    } catch {
+      // The reading experience still works when browser storage is unavailable.
+    }
+  }, [readingToneIndex]);
+
   const chapterName = scope === "chapter1" ? "Chapter 1 · Introduction" : scope === "chapter2" ? "Chapter 2 · Computer Threat" : "Combined study";
 
   const begin = (
@@ -1041,14 +1111,29 @@ function ChapterWorkspace({
 
 function App() {
   const [now, setNow] = useState(() => Date.now());
-  const [selectedCourseId, setSelectedCourseId] = useState<CourseId | null>(null);
-  const [selectedChapter, setSelectedChapter] = useState<StudyScope | null>(null);
-  const [activeTab, setActiveTab] = useState<StudyTab>("study-notes");
-  const [quizScope, setQuizScope] = useState<StudyScope>("combined");
-  const [examScope, setExamScope] = useState<StudyScope>("combined");
+  const [restoredState] = useState(readSavedStudyState);
+  const [selectedCourseId, setSelectedCourseId] = useState<CourseId | null>(() => restoredState?.selectedCourseId ?? null);
+  const [selectedChapter, setSelectedChapter] = useState<StudyScope | null>(() => restoredState?.selectedChapter ?? null);
+  const [activeTab, setActiveTab] = useState<StudyTab>(() => restoredState?.activeTab ?? "study-notes");
+  const [quizScope, setQuizScope] = useState<StudyScope>(() => restoredState?.quizScope ?? "combined");
+  const [examScope, setExamScope] = useState<StudyScope>(() => restoredState?.examScope ?? "combined");
   const [quizCount, setQuizCount] = useState(15);
   const [examCount, setExamCount] = useState(15);
   const [session, setSession] = useState<SessionState | null>(null);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SAVED_STUDY_STATE_KEY, JSON.stringify({
+        selectedCourseId,
+        selectedChapter,
+        activeTab,
+        quizScope,
+        examScope,
+      }));
+    } catch {
+      // Navigation remains fully usable when browser storage is unavailable.
+    }
+  }, [selectedCourseId, selectedChapter, activeTab, quizScope, examScope]);
 
   useEffect(() => {
     const interval = window.setInterval(() => setNow(Date.now()), 1000);
