@@ -406,7 +406,7 @@ function SummaryView({ chapters }: { chapters: ChapterLearningContent[] }) {
             {chapter.summary.map((topic, index) => (
               <article className="summary-row" key={topic.title}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                <div><strong>{topic.title}</strong><p>{topic.description}</p></div>
+                <div><strong>{topic.title}</strong><p><HighlightedText text={topic.description} /></p></div>
               </article>
             ))}
           </div>
@@ -936,7 +936,7 @@ function ChapterWorkspace({
       <div className={`ias-tab-content reading-surface tone-${activeReadingTone.id}`}>
         <div className="reading-style-toolbar">
           <div>
-            <span className="eyebrow">READING CANVAS</span>
+            <span className="eyebrow"><Palette size={13} /> READING CANVAS</span>
             <small>{activeReadingTone.label} · choose a softer page background</small>
           </div>
           <div className="reading-tone-choices" aria-label="Reading background">
