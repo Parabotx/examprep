@@ -31,6 +31,7 @@ export interface QuizQuestion {
   options: string[];
   answerIndex: number;
   explanation: string;
+  topic: string;
 }
 
 export interface InteractiveScenario {
