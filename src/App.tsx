@@ -162,6 +162,7 @@ const studyTabs: { id: StudyTab; label: string; icon: typeof BookOpen }[] = [
   { id: "summary", label: "Summary", icon: Layers3 },
   { id: "interactive", label: "Interactive study", icon: Brain },
   { id: "quizzes", label: "Quizzes", icon: Target },
+  { id: "exam", label: "Exam", icon: GraduationCap },
 ];
 
 function formatCountdown(examAt: string, now: number) {
