@@ -736,7 +736,7 @@ function AssessmentSession({
       </div>
       <div className="assessment-progress-row">
         <span>QUESTION {questionIndex + 1} <small>OF {session.questions.length}</small></span>
-        <span>{answers.filter((answer) => answer !== undefined).length} ANSWERED</span>
+        <span>{answers.filter((answer) => answer >= 0).length} ANSWERED</span>
       </div>
       <div className="assessment-progress-track"><span style={{ width: `${((questionIndex + 1) / session.questions.length) * 100}%` }} /></div>
       <div className="assessment-question-card">
@@ -1021,7 +1021,7 @@ function ChapterWorkspace({
         )}
         {activeTab === "exam" && (
           session ? (
-            <AssessmentSession session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
+            <AssessmentSession key={session.questions.map((question) => question.id).join("|")} session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
           ) : (
             <AssessmentSetup
               mode="exam"
