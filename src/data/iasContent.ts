@@ -1,4 +1,5 @@
 import type { ChapterLearningContent, StudyTopic, SummaryTopic, InteractiveScenario } from "../types";
+import { chapter1QuizBank, chapter2QuizBank } from "./iasQuizBank";
 
 const chapter1Notes: StudyTopic[] = [
   {
