@@ -6,6 +6,7 @@ interface QuestionSeed {
   answer: string;
   distractors: [string, string, string];
   explanation: string;
+  topic: string;
 }
 
 function buildBank(prefix: string, seeds: QuestionSeed[]): QuizQuestion[] {
@@ -23,6 +24,7 @@ function buildBank(prefix: string, seeds: QuestionSeed[]): QuizQuestion[] {
         options: directOptions,
         answerIndex: directOptions.indexOf(seed.answer),
         explanation: seed.explanation,
+        topic: seed.topic,
       },
       {
         id: `${prefix}-${String(index + 1).padStart(2, "0")}-b`,
@@ -30,6 +32,7 @@ function buildBank(prefix: string, seeds: QuestionSeed[]): QuizQuestion[] {
         options: scenarioOptions,
         answerIndex: scenarioOptions.indexOf(seed.answer),
         explanation: seed.explanation,
+        topic: seed.topic,
       },
     ];
   });
@@ -42,6 +45,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Processed data shaped into a meaningful and useful form",
     distractors: ["An unauthorized attack", "A physical vulnerability", "A security protocol"],
     explanation: "The lecture defines information as organized, processed data that has meaning and usefulness to people."
+    topic: "Information security foundations",
   },
   {
     question: "What is the main purpose of information security in the lecture?",
@@ -49,6 +53,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Protection of information and its critical elements",
     distractors: ["Increasing network speed only", "Replacing all hardware", "Publishing all system records"],
     explanation: "Information security protects information and critical elements from unauthorized modification, disruption, destruction, inspection and access."
+    topic: "Information security foundations",
   },
   {
     question: "Which protection activity aims to stop assets from being damaged?",
@@ -56,6 +61,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Prevention",
     distractors: ["Detection", "Reaction", "Traffic analysis"],
     explanation: "Prevention means taking measures that prevent assets from being damaged."
+    topic: "Protection activities",
   },
   {
     question: "Which protection activity identifies whether damage occurred, how it happened and who caused it?",
@@ -63,6 +69,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Detection",
     distractors: ["Prevention", "Reaction", "Authorization"],
     explanation: "Detection measures reveal whether an asset was damaged, how it was damaged and who caused the damage."
+    topic: "Protection activities",
   },
   {
     question: "Which protection activity focuses on recovering an asset after damage?",
@@ -70,6 +77,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Reaction",
     distractors: ["Prevention", "Reconnaissance", "Authentication"],
     explanation: "Reaction includes measures that recover assets or recover from damage."
+    topic: "Protection activities",
   },
   {
     question: "What is a threat?",
@@ -77,6 +85,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Threat",
     distractors: ["Vulnerability", "Attack", "Countermeasure"],
     explanation: "A threat is something harmful that may happen."
+    topic: "Threats, vulnerabilities & attacks",
   },
   {
     question: "What is a vulnerability?",
@@ -84,6 +93,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Vulnerability",
     distractors: ["Threat", "Reaction", "Non-repudiation"],
     explanation: "A vulnerability is a weakness in defenses that can be exploited."
+    topic: "Threats, vulnerabilities & attacks",
   },
   {
     question: "What is an attack in the threat-vulnerability model?",
@@ -91,6 +101,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Attack",
     distractors: ["Asset", "Security criterion", "Prevention"],
     explanation: "An attack is a method or action through which a threat is actualized by exploiting a vulnerability."
+    topic: "Threats, vulnerabilities & attacks",
   },
   {
     question: "Why do attackers target information systems, according to the lecture?",
@@ -98,6 +109,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Exploiting vulnerabilities for personal or financial gain",
     distractors: ["Improving system modularity", "Performing peer review", "Reducing user permissions"],
     explanation: "The slides describe attackers as individuals or groups seeking to exploit vulnerabilities for personal or financial gain."
+    topic: "Attacker types",
   },
   {
     question: "What typically characterizes an amateur or script kiddie?",
@@ -105,6 +117,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Amateur / script kiddie",
     distractors: ["White-hat consultant", "Trusted third party", "Database administrator"],
     explanation: "The slides describe script kiddies as attackers with little or no skill who use existing tools or instructions."
+    topic: "Attacker types",
   },
   {
     question: "What is the purpose of a white-hat hacker in the lecture?",
@@ -112,6 +125,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "White hat",
     distractors: ["Black hat", "Gray hat", "Script kiddie"],
     explanation: "White-hat attackers test systems to discover weaknesses so the systems can be made more secure."
+    topic: "Attacker types",
   },
   {
     question: "How does the lecture describe a gray-hat attacker?",
@@ -119,6 +133,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Gray hat",
     distractors: ["White hat", "Black hat", "State-sponsored attacker"],
     explanation: "Gray hats are described as being between white and black hats; they may report a vulnerability when it suits their agenda."
+    topic: "Attacker types",
   },
   {
     question: "Which hacker category is described as unethical or criminal and acting for personal gain or malicious reasons?",
@@ -126,6 +141,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Black hat",
     distractors: ["White hat", "Gray hat", "Security auditor"],
     explanation: "Black-hat attackers violate security unethically or criminally for personal gain or malicious reasons."
+    topic: "Attacker types",
   },
   {
     question: "Which group is described as professional criminal groups focused on control, power and wealth?",
@@ -133,6 +149,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Cybercriminals",
     distractors: ["Hacktivists", "White hats", "Insider auditors"],
     explanation: "The slide describes cybercriminals as professional criminal groups focused on control, power and wealth."
+    topic: "Attacker types",
   },
   {
     question: "What is the stated purpose of hacktivists?",
@@ -140,6 +157,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Hacktivists",
     distractors: ["Script kiddies", "Database testers", "White hats"],
     explanation: "Hacktivists use attacks to make political statements or create awareness about issues important to them."
+    topic: "Attacker types",
   },
   {
     question: "What may state-sponsored attackers attempt to do?",
@@ -147,6 +165,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "State-sponsored attacker",
     distractors: ["Amateur attacker", "White-hat tester", "Spam filter"],
     explanation: "The slides say state-sponsored attackers steal government secrets, gather intelligence and sabotage networks."
+    topic: "Attacker types",
   },
   {
     question: "Which is a physical vulnerability listed in Chapter 1?",
@@ -154,6 +173,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Physical vulnerability",
     distractors: ["Communication vulnerability", "Non-validated input", "Transport-layer attack"],
     explanation: "The lecture lists computers and hard disks being stolen as physical vulnerabilities."
+    topic: "Security vulnerabilities",
   },
   {
     question: "Which example best represents a communication vulnerability?",
@@ -161,6 +181,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Communication vulnerability",
     distractors: ["Physical-only vulnerability", "Human vulnerability", "Availability criterion"],
     explanation: "The slides give wires being tapped as an example of communication vulnerabilities."
+    topic: "Security vulnerabilities",
   },
   {
     question: "What is non-validated input?",
@@ -168,6 +189,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Non-validated input",
     distractors: ["Traffic analysis", "Non-repudiation", "Reaction"],
     explanation: "Non-validated input means data entering a program may contain malicious content because it is not properly checked."
+    topic: "Security vulnerabilities",
   },
   {
     question: "Which password example is used to illustrate a poorly chosen password?",
@@ -175,6 +197,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Poorly chosen password",
     distractors: ["Boot-sector infection", "Port redirection", "Availability loss"],
     explanation: "The slide explicitly gives simple passwords such as 123 and abc as examples of weak password choices."
+    topic: "Security vulnerabilities",
   },
   {
     question: "Which is one consequence of a security breach listed in Chapter 1?",
@@ -182,6 +205,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Decrease in trust from partners",
     distractors: ["Improved availability", "Encapsulation", "Key distribution"],
     explanation: "The lecture lists reduced trust from partners such as clients, providers and shareholders."
+    topic: "Breach consequences",
   },
   {
     question: "Which human impact of a security breach is specifically mentioned?",
@@ -189,6 +213,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Human consequences involving personal or sensitive data",
     distractors: ["Improved quality of service", "Modularity", "Port scanning"],
     explanation: "The slides identify human consequences involving personal and sensitive data, including medical and insurance information."
+    topic: "Breach consequences",
   },
   {
     question: "What does confidentiality protect?",
@@ -196,6 +221,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Confidentiality",
     distractors: ["Integrity", "Availability", "Modularity"],
     explanation: "Confidentiality ensures assets are accessed only by authorized parties; unauthorized reading compromises it."
+    topic: "CIA triad",
   },
   {
     question: "What does integrity require?",
@@ -203,6 +229,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Integrity",
     distractors: ["Availability", "Confidentiality", "Traffic analysis"],
     explanation: "Integrity requires that messages be modified only by authorized parties and protects against unauthorized alteration."
+    topic: "CIA triad",
   },
   {
     question: "What does availability ensure?",
@@ -210,6 +237,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Availability",
     distractors: ["Confidentiality", "Non-repudiation", "Encapsulation"],
     explanation: "Availability means assets are accessible to authorized parties at appropriate times."
+    topic: "CIA triad",
   },
   {
     question: "What is authentication?",
@@ -217,6 +245,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Authentication",
     distractors: ["Authorization", "Availability", "Interruption"],
     explanation: "Authentication establishes the correct identity of communicating parties and helps distinguish genuine parties from impersonators."
+    topic: "Security requirements",
   },
   {
     question: "What does authorization determine?",
@@ -224,6 +253,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Authorization",
     distractors: ["Authentication", "Traffic analysis", "Interception"],
     explanation: "Authorization gives access rights to different types of users."
+    topic: "Security requirements",
   },
   {
     question: "What is non-repudiation intended to guarantee?",
@@ -231,6 +261,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Non-repudiation",
     distractors: ["Confidentiality", "Availability", "Ping sweep"],
     explanation: "Non-repudiation helps ensure a sender cannot deny sending a message and a recipient cannot deny receiving it."
+    topic: "Security requirements",
   },
   {
     question: "Which attack category targets availability?",
@@ -238,6 +269,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Interruption",
     distractors: ["Interception", "Modification", "Fabrication"],
     explanation: "Interruption is an attack on availability."
+    topic: "Attack categories",
   },
   {
     question: "Which attack category targets confidentiality?",
@@ -245,6 +277,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Interception",
     distractors: ["Interruption", "Modification", "Fabrication"],
     explanation: "Interception is an attack on confidentiality."
+    topic: "Attack categories",
   },
   {
     question: "Which attack category targets integrity?",
@@ -252,6 +285,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Modification",
     distractors: ["Interruption", "Interception", "Fabrication"],
     explanation: "Modification is an attack on integrity."
+    topic: "Attack categories",
   },
   {
     question: "Which attack category targets authenticity by inserting false information?",
@@ -259,6 +293,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Fabrication",
     distractors: ["Interruption", "Interception", "Modification"],
     explanation: "Fabrication is an attack on authenticity through creation or insertion of false information."
+    topic: "Attack categories",
   },
   {
     question: "What makes an attack passive?",
@@ -266,6 +301,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Passive attack",
     distractors: ["Active attack", "Buffer overflow", "Denial of service"],
     explanation: "A passive attack attempts to learn or use information without changing message contents or disrupting the communication."
+    topic: "Passive attacks",
   },
   {
     question: "Which passive attack involves obtaining the actual message content?",
@@ -273,6 +309,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Release of message contents",
     distractors: ["Traffic analysis", "Masquerade", "Replay"],
     explanation: "Release of message contents is one of the two passive attack types named in the lecture."
+    topic: "Passive attacks",
   },
   {
     question: "What does traffic analysis examine?",
@@ -280,6 +317,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Traffic analysis",
     distractors: ["Message modification", "Fabrication", "Port redirection"],
     explanation: "Traffic analysis is a passive attack that learns from communication patterns."
+    topic: "Passive attacks",
   },
   {
     question: "Which response does the lecture emphasize for preventing passive attacks?",
@@ -287,6 +325,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Encryption",
     distractors: ["Disabling all user accounts", "Port redirection", "Deduplication"],
     explanation: "Passive attacks are difficult to detect because communication looks normal, so the slides emphasize prevention by encryption."
+    topic: "Passive attacks",
   },
   {
     question: "Which list contains the four active attack categories from Chapter 1?",
@@ -294,6 +333,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Masquerade, replay, message modification and denial of service",
     distractors: ["Sniffing, ping sweep, port scan and nslookup", "Prevention, detection, reaction and recovery", "Modularity, encapsulation, data hiding and peer review"],
     explanation: "The lecture lists masquerade, replay, modification of messages and denial of service as four active attack categories."
+    topic: "Active attacks",
   },
   {
     question: "What is a masquerade attack?",
@@ -301,6 +341,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Masquerade",
     distractors: ["Replay", "Traffic analysis", "Interruption"],
     explanation: "A masquerade occurs when one entity acts as another."
+    topic: "Active attacks",
   },
   {
     question: "What is a replay attack?",
@@ -308,6 +349,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Replay",
     distractors: ["Masquerade", "Interception", "Ping sweep"],
     explanation: "Replay is the reuse or retransmission of a previous message."
+    topic: "Active attacks",
   },
   {
     question: "What is an internal attack?",
@@ -315,6 +357,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Internal attack / insider attack",
     distractors: ["External attack", "Passive traffic analysis", "Trusted-third-party exchange"],
     explanation: "Internal attacks originate from a malicious node within the network domain and are also called insider attacks."
+    topic: "Internal & external attacks",
   },
   {
     question: "What is an external attack?",
@@ -322,6 +365,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "External attack",
     distractors: ["Internal attack", "Authorization", "Non-repudiation"],
     explanation: "External attacks are conducted by hosts outside the network domain; false routing information is an example in the slides."
+    topic: "Internal & external attacks",
   },
   {
     question: "Which examples does the Chapter 1 table place at the application layer?",
@@ -329,6 +373,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Application layer",
     distractors: ["Transport layer", "Network layer", "Data-link layer"],
     explanation: "The slide's TCP/IP table lists email bombing, repudiation, data corruption and malicious code at the application layer."
+    topic: "TCP/IP attack layers",
   },
   {
     question: "Which attacks are listed at the transport layer?",
@@ -336,6 +381,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Transport layer",
     distractors: ["Application layer", "Network layer", "Data-link layer"],
     explanation: "The slide table lists session hijacking, altering checksum and SYN flooding at the transport layer."
+    topic: "TCP/IP attack layers",
   },
   {
     question: "Which examples are listed at the network layer?",
@@ -343,6 +389,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Network layer",
     distractors: ["Application layer", "Transport layer", "Data-link layer"],
     explanation: "These are the examples shown in the slide's network-layer row."
+    topic: "TCP/IP attack layers",
   },
   {
     question: "Which examples are listed at the data-link layer?",
@@ -350,6 +397,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Data-link layer",
     distractors: ["Application layer", "Transport layer", "Network layer"],
     explanation: "The Chapter 1 table lists traffic analysis and disruption, including MAC and IEEE 802.11 Wi-Fi, at the data-link layer."
+    topic: "TCP/IP attack layers",
   },
   {
     question: "Which countermeasure is paired with finding a way into a network?",
@@ -357,6 +405,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Firewall",
     distractors: ["IPsec only", "User education only", "Data deduplication"],
     explanation: "The countermeasure slide pairs finding a way into the network with firewalls."
+    topic: "Countermeasures",
   },
   {
     question: "Which countermeasure is paired with packet sniffing?",
@@ -364,6 +413,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Encryption such as SSL or HTTPS",
     distractors: ["Port redirection", "Disabling antivirus", "Traffic flooding"],
     explanation: "The slides pair packet sniffing with encryption and name SSL and HTTPS as examples."
+    topic: "Countermeasures",
   },
   {
     question: "Which countermeasure does the lecture pair with TCP hijacking?",
@@ -371,6 +421,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "IPsec",
     distractors: ["Spam filtering", "Deduplication", "Peer review"],
     explanation: "The countermeasure slide pairs TCP hijacking with IPsec."
+    topic: "Countermeasures",
   },
   {
     question: "Which sequence lists all four requirements of the network-security model?",
@@ -378,6 +429,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Distribute/share keys and specify a protocol for using the transformation",
     distractors: ["Remove the recipient and publish the keys", "Disable the communication channel", "Replace encryption with traffic analysis"],
     explanation: "The model requires algorithm design, key generation, key distribution/sharing and a protocol for using them."
+    topic: "Network security model",
   },
   {
     question: "What is the role of a trusted third party in the network-security model?",
@@ -385,6 +437,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "A trusted third party supporting the security exchange",
     distractors: ["The attacker observing the channel", "The source of a denial-of-service flood", "A passive virus host"],
     explanation: "The network-security model allows a trusted third party, for example a key distributor, to be involved."
+    topic: "Network security model",
   },
   {
     question: "Which controls are shown in the network-access security model?",
@@ -392,6 +445,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "A network-access security model with entry and system controls",
     distractors: ["The virus life cycle", "A TCP three-way handshake", "The history of ARPANET"],
     explanation: "The slide's access-security model shows a gatekeeper, access controls, firewall/proxy servers and antivirus/IDS."
+    topic: "Network security model",
   },
   {
     question: "What historical network project did ARPA examine in the 1960s?",
@@ -399,6 +453,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "Advanced Research Projects Agency (ARPA)",
     distractors: ["World Wide Web Consortium", "RAND Corporation's WAF team", "IEEE 802.11"],
     explanation: "The lecture says ARPA examined the feasibility of redundant networked communications in the 1960s."
+    topic: "History of information security",
   },
   {
     question: "Which security weaknesses did the lecture identify in early ARPANET?",
@@ -406,6 +461,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "The 1970s and 1980s",
     distractors: ["The 1960s only", "The 1990s only", "The present only"],
     explanation: "The slides describe these weaknesses under the 1970s and 80s as ARPANET grew."
+    topic: "History of information security",
   },
   {
     question: "What did RAND Report R-609 signify in the lecture?",
@@ -413,6 +469,7 @@ const chapter1Seeds: QuestionSeed[] = [
     answer: "RAND Report R-609",
     distractors: ["IEEE 802.11", "TCP SYN report 609", "The Melissa report"],
     explanation: "The slides call RAND Report R-609 the start of the study of computer security."
+    topic: "History of information security",
   }
 ];
 
@@ -423,6 +480,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Malicious code",
     distractors: ["A security criterion", "A software-development control", "A trusted protocol"],
     explanation: "Malicious code is code intended to cause undesired effects, security breaches, damage, disruption or distress."
+    topic: "Malicious-code classifications",
   },
   {
     question: "Which examples are host-dependent malicious code in the slides?",
@@ -430,6 +488,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Viruses and logic bombs",
     distractors: ["Worms and zombie programs", "Firewalls and IDS", "Ping sweeps and port scans"],
     explanation: "The slides identify viruses and logic bombs as examples of threats needing a host program."
+    topic: "Malicious-code classifications",
   },
   {
     question: "Which examples are independent malicious programs?",
@@ -437,6 +496,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Worms and zombie programs",
     distractors: ["Viruses and logic bombs", "Buffer overflows and incomplete mediation", "Firewalls and proxies"],
     explanation: "The slides describe independent malicious software as self-contained and give worms and zombie programs as examples."
+    topic: "Malicious-code classifications",
   },
   {
     question: "Which threats are non-replicating examples in the lecture?",
@@ -444,6 +504,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Logic bombs and zombie programs",
     distractors: ["Viruses and worms", "Macro viruses and email viruses", "Sniffers and port scanners"],
     explanation: "Logic bombs and zombie programs are the stated examples of non-replicating threats."
+    topic: "Malicious-code classifications",
   },
   {
     question: "Which malicious-code examples replicate?",
@@ -451,6 +512,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Viruses and worms",
     distractors: ["Logic bombs and zombies", "Firewalls and proxies", "Spyware and spam filters"],
     explanation: "The lecture identifies viruses and worms as replicating malicious software."
+    topic: "Malicious-code classifications",
   },
   {
     question: "What defines a computer virus in Chapter 2?",
@@ -458,6 +520,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Virus",
     distractors: ["Worm", "Logic bomb", "Firewall"],
     explanation: "The lecture defines a virus as malicious code that replicates and hides in or modifies other programs."
+    topic: "Virus lifecycle",
   },
   {
     question: "What happens during the dormant phase of a virus?",
@@ -465,6 +528,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Dormant phase",
     distractors: ["Propagation phase", "Triggering phase", "Execution phase"],
     explanation: "During the dormant phase, the virus is idle and waits for an activation event."
+    topic: "Virus lifecycle",
   },
   {
     question: "What happens during the propagation phase of a virus?",
@@ -472,6 +536,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Propagation phase",
     distractors: ["Dormant phase", "Triggering phase", "Execution phase"],
     explanation: "Propagation is the phase in which the virus makes copies of itself in other programs or disk areas."
+    topic: "Virus lifecycle",
   },
   {
     question: "What happens during a virus's triggering phase?",
@@ -479,6 +544,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Triggering phase",
     distractors: ["Dormant phase", "Propagation phase", "Execution phase"],
     explanation: "The triggering phase activates the virus to perform the function for which it was intended."
+    topic: "Virus lifecycle",
   },
   {
     question: "What happens during the execution phase of a virus?",
@@ -486,6 +552,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Execution phase",
     distractors: ["Dormant phase", "Propagation phase", "Triggering phase"],
     explanation: "Execution is when the virus performs its function, which may be harmless or damaging."
+    topic: "Virus lifecycle",
   },
   {
     question: "What is a parasitic virus?",
@@ -493,6 +560,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Parasitic virus",
     distractors: ["Boot-sector virus", "Stealth virus", "Metamorphic virus"],
     explanation: "The parasitic virus is described as the traditional and common type that attaches to executable files and replicates."
+    topic: "Virus types",
   },
   {
     question: "What characterizes a memory-resident virus?",
@@ -500,6 +568,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Memory-resident virus",
     distractors: ["Parasitic virus", "Boot-sector virus", "Macro virus"],
     explanation: "A memory-resident virus resides in main memory and can infect each program that executes afterward."
+    topic: "Virus types",
   },
   {
     question: "What does a boot-sector virus infect?",
@@ -507,6 +576,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Boot-sector virus",
     distractors: ["Memory-resident virus", "Polymorphic virus", "Email virus"],
     explanation: "The lecture says boot-sector viruses infect a master boot record or boot record."
+    topic: "Virus types",
   },
   {
     question: "What is the purpose of a stealth virus?",
@@ -514,6 +584,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Stealth virus",
     distractors: ["Parasitic virus", "Boot-sector virus", "Macro virus"],
     explanation: "A stealth virus is designed to hide itself from detection by antivirus software."
+    topic: "Virus types",
   },
   {
     question: "What makes a polymorphic virus difficult to detect?",
@@ -521,6 +592,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Polymorphic virus",
     distractors: ["Memory-resident virus", "Boot-sector virus", "Parasitic virus"],
     explanation: "The slides say polymorphic viruses mutate with every infection, making signature-based detection difficult."
+    topic: "Virus types",
   },
   {
     question: "What distinguishes a metamorphic virus from a polymorphic virus in the slides?",
@@ -528,6 +600,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Metamorphic virus",
     distractors: ["Stealth virus", "Parasitic virus", "Boot-sector virus"],
     explanation: "The lecture says metamorphic viruses rewrite themselves completely each iteration and may change behavior as well as appearance."
+    topic: "Virus types",
   },
   {
     question: "What do macro viruses commonly infect according to the lecture?",
@@ -535,6 +608,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Microsoft documents",
     distractors: ["Router firmware only", "Boot records only", "Database backups only"],
     explanation: "The slides say virtually all macro viruses infect Microsoft documents and are commonly spread by email."
+    topic: "Macro & email viruses",
   },
   {
     question: "What happened when a Melissa email attachment was opened?",
@@ -542,6 +616,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Melissa email virus",
     distractors: ["Smurf attack", "TOCTTOU error", "Port scan"],
     explanation: "The lecture describes Melissa as a Word macro embedded in an attachment that emailed itself to the user's mailing-list contacts."
+    topic: "Macro & email viruses",
   },
   {
     question: "What distinguishes a worm from a virus?",
@@ -549,6 +624,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Worm",
     distractors: ["Logic bomb", "Trojan horse", "Stealth virus"],
     explanation: "The slides say a worm spreads through a network and does not need a host program to replicate."
+    topic: "Worms",
   },
   {
     question: "What is the main objective of worms in the lecture?",
@@ -556,6 +632,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Consuming system resources",
     distractors: ["Encrypting data for ransom only", "Collecting traffic patterns only", "Changing a boot record only"],
     explanation: "The lecture says worms consume resources such as memory and bandwidth and can slow systems until they stop responding."
+    topic: "Worms",
   },
   {
     question: "Which is a symptom of a worm listed in Chapter 2?",
@@ -563,6 +640,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Sending emails without the user's knowledge",
     distractors: ["A verified digital signature", "Successful backup encryption", "Improved browser performance"],
     explanation: "The worm symptom list includes email being sent without the user's knowledge."
+    topic: "Worms",
   },
   {
     question: "What is a logic bomb?",
@@ -570,6 +648,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Logic bomb",
     distractors: ["Worm", "Keylogger", "Ping sweep"],
     explanation: "A logic bomb is embedded in a legitimate program and is triggered by a specified condition."
+    topic: "Logic bombs",
   },
   {
     question: "Which can trigger a logic bomb according to the slides?",
@@ -577,6 +656,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "A particular day or date",
     distractors: ["A port scan completing", "A firewall logging a packet", "A password being salted"],
     explanation: "The slides list a particular day or date among possible logic-bomb triggers."
+    topic: "Logic bombs",
   },
   {
     question: "What defines a Trojan horse?",
@@ -584,6 +664,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Trojan horse",
     distractors: ["Worm", "Ping sweep", "Buffer overflow"],
     explanation: "A Trojan horse misrepresents itself as useful or interesting to persuade a victim to install it."
+    topic: "Trojan horses",
   },
   {
     question: "Which Trojan type enables unauthorized remote access?",
@@ -591,6 +672,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Remote-access Trojan",
     distractors: ["Data-sending Trojan", "FTP Trojan", "Destructive Trojan"],
     explanation: "The Trojan classification table says remote-access Trojans enable unauthorized remote access."
+    topic: "Trojan horses",
   },
   {
     question: "Which Trojan type sends sensitive information such as passwords to an attacker?",
@@ -598,6 +680,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Data-sending Trojan",
     distractors: ["Proxy Trojan", "FTP Trojan", "DoS Trojan"],
     explanation: "Data-sending Trojans provide the threat actor with sensitive data such as passwords."
+    topic: "Trojan horses",
   },
   {
     question: "What does a proxy Trojan do?",
@@ -605,6 +688,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Proxy Trojan",
     distractors: ["Destructive Trojan", "Remote-access Trojan", "Keylogger"],
     explanation: "A proxy Trojan uses the victim's computer as the source device for attacks or illegal activity."
+    topic: "Trojan horses",
   },
   {
     question: "What capability does an FTP Trojan enable?",
@@ -612,6 +696,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "FTP Trojan",
     distractors: ["Security-software disabler", "Data-sending Trojan", "DoS Trojan"],
     explanation: "The classification table says FTP Trojans enable unauthorized file-transfer services on end devices."
+    topic: "Trojan horses",
   },
   {
     question: "Which Trojan type stops antivirus programs or firewalls from functioning?",
@@ -619,6 +704,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Security-software disabler Trojan",
     distractors: ["Remote-access Trojan", "Proxy Trojan", "FTP Trojan"],
     explanation: "The lecture lists a security-software-disabler Trojan as one that stops antivirus or firewall programs."
+    topic: "Trojan horses",
   },
   {
     question: "What does a keylogger do?",
@@ -626,6 +712,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Keylogger",
     distractors: ["FTP service", "Port scanner", "Boot-sector infection"],
     explanation: "The lecture says keyloggers record keystrokes and may steal confidential information such as credit-card numbers."
+    topic: "Trojan horses",
   },
   {
     question: "What is spyware?",
@@ -633,6 +720,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Spyware",
     distractors: ["A firewall", "A logic bomb", "A ping sweep"],
     explanation: "Spyware is software placed on a computer, typically without the user's knowledge, that reports information about user activity."
+    topic: "Spyware",
   },
   {
     question: "Which information does the spyware slide say may be collected?",
@@ -640,6 +728,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Spyware",
     distractors: ["Buffer overflow", "DDoS", "Port redirection"],
     explanation: "The spyware slide lists visited websites, browser/system information and the computer IP address as gathered information."
+    topic: "Spyware",
   },
   {
     question: "What is ransomware?",
@@ -647,6 +736,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Ransomware",
     distractors: ["Spyware", "Macro virus", "Packet sniffer"],
     explanation: "Ransomware denies access to the infected system or data and demands payment."
+    topic: "Ransomware",
   },
   {
     question: "Which technique does ransomware frequently use against files?",
@@ -654,6 +744,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Encryption of system files and data",
     distractors: ["Ping sweeping", "Port redirection", "Data deduplication"],
     explanation: "The slides say ransomware frequently uses an encryption algorithm to encrypt system files and data."
+    topic: "Ransomware",
   },
   {
     question: "Which delivery vectors are named for ransomware campaigns?",
@@ -661,6 +752,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Ransomware",
     distractors: ["Boot-sector virus", "Memory-resident virus", "Port scanner"],
     explanation: "The ransomware slides list email, malvertising and social engineering as campaign vectors."
+    topic: "Ransomware",
   },
   {
     question: "What is spam?",
@@ -668,6 +760,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Spam",
     distractors: ["SYN flooding", "Trust exploitation", "Buffer overflow"],
     explanation: "Spam is unsolicited junk mail that fills email inboxes."
+    topic: "Spam",
   },
   {
     question: "Which action is recommended to fight spam?",
@@ -675,6 +768,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Never reply to junk emails",
     distractors: ["Open every attachment", "Publish the actual email address", "Forward it to every contact"],
     explanation: "The slide recommends never replying to junk emails and avoiding suspicious attachments."
+    topic: "Spam",
   },
   {
     question: "What is the purpose of a reconnaissance attack?",
@@ -682,6 +776,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Reconnaissance",
     distractors: ["Access attack", "Denial of service", "Buffer overflow"],
     explanation: "Reconnaissance surveys a network and gathers information for a future attack."
+    topic: "Reconnaissance attacks",
   },
   {
     question: "What does a packet sniffer do?",
@@ -689,6 +784,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Packet sniffer / network analyzer",
     distractors: ["Ping sweep", "Port redirection", "Logic bomb"],
     explanation: "A packet sniffer captures network traffic, which is then decoded and analyzed."
+    topic: "Reconnaissance attacks",
   },
   {
     question: "What does a ping sweep identify?",
@@ -696,6 +792,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Ping sweep",
     distractors: ["Port scan", "Packet modification", "Keylogging"],
     explanation: "A ping sweep sends echo requests to numerous host addresses to see which hosts respond."
+    topic: "Reconnaissance attacks",
   },
   {
     question: "What does a port scanner look for?",
@@ -703,6 +800,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Port scanner",
     distractors: ["Packet sniffer", "Spam filter", "WAF"],
     explanation: "A port scanner surveys a host network for open ports, which are associated with applications."
+    topic: "Reconnaissance attacks",
   },
   {
     question: "What is nslookup used for in the lecture?",
@@ -710,6 +808,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "nslookup",
     distractors: ["Wireshark", "TCP intercept", "IPsec"],
     explanation: "The information-query slide names nslookup as a common way to resolve hostnames and IP addresses."
+    topic: "Reconnaissance attacks",
   },
   {
     question: "What is a password attack in the access-attack section?",
@@ -717,6 +816,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Password attack",
     distractors: ["Ping sweep", "Traffic analysis", "Logic bomb"],
     explanation: "The slides describe password attacks as attempts to crack device passwords to gain access and change configurations."
+    topic: "Access attacks",
   },
   {
     question: "What is trust exploitation?",
@@ -724,6 +824,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Trust exploitation",
     distractors: ["Port scanning", "Smurf attack", "Spyware"],
     explanation: "Trust exploitation occurs when an attacker elevates privileges by exploiting trust or an application."
+    topic: "Access attacks",
   },
   {
     question: "Which two trust relationships are named in the lecture?",
@@ -731,6 +832,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Trust exploitation through client-to-server or server-to-client trust",
     distractors: ["Host-dependent and independent malware", "Confidentiality and availability", "Dormant and execution phases"],
     explanation: "The slide says trust exploitation can rely on the client's trust in the server or the server's trust in the client."
+    topic: "Access attacks",
   },
   {
     question: "What is port redirection?",
@@ -738,6 +840,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Port redirection",
     distractors: ["Ping sweep", "Traffic analysis", "Macro infection"],
     explanation: "Port redirection uses a machine with internal access to pass traffic through a port or ACL that would normally deny it."
+    topic: "Access attacks",
   },
   {
     question: "What is a man-in-the-middle attack?",
@@ -745,6 +848,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Man-in-the-middle attack",
     distractors: ["Port scan", "Logic bomb", "Buffer overflow"],
     explanation: "A man-in-the-middle attacker positions themselves between two communicating entities and reads or alters their data."
+    topic: "Access attacks",
   },
   {
     question: "What is a distributed denial-of-service attack?",
@@ -752,6 +856,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Distributed DoS (DDoS)",
     distractors: ["Reconnaissance", "Trust exploitation", "Incomplete mediation"],
     explanation: "A DDoS attack uses multiple compromised systems; the slides call them zombies or slaves."
+    topic: "Denial-of-service attacks",
   },
   {
     question: "Why does a TCP SYN flood fill connection queues?",
@@ -759,6 +864,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "The TCP three-way handshake",
     distractors: ["DNS hostname resolution", "A virus propagation phase", "The application-layer WAF"],
     explanation: "The lecture says the attacker fails to ACK SYN-ACK responses, causing connection queues to fill and preventing new connections."
+    topic: "Denial-of-service attacks",
   },
   {
     question: "What is the basic mechanism of a Smurf attack?",
@@ -766,6 +872,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Smurf attack",
     distractors: ["TCP SYN flood", "Teardrop", "Port redirection"],
     explanation: "The Smurf attack uses a spoofed source address and broadcast amplification to generate many ICMP replies toward a target."
+    topic: "Denial-of-service attacks",
   },
   {
     question: "Which three terms does the lecture attribute to IEEE Standard 729?",
@@ -773,6 +880,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Error, fault and failure",
     distractors: ["Threat, vulnerability and attack", "Confidentiality, integrity and availability", "Dormant, propagation and execution"],
     explanation: "The slides define Error as a human mistake, Fault as an incorrect software step or definition, and Failure as a departure from desired behavior."
+    topic: "Program security flaws",
   },
   {
     question: "What is a buffer overflow?",
@@ -780,6 +888,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Buffer overflow",
     distractors: ["Incomplete mediation", "TOCTTOU", "Traffic analysis"],
     explanation: "A buffer overflow occurs when more data is written to a finite buffer than the buffer can hold."
+    topic: "Program security flaws",
   },
   {
     question: "What is incomplete mediation?",
@@ -787,6 +896,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Incomplete mediation",
     distractors: ["Memory-resident virus", "Smurf attack", "DDoS"],
     explanation: "The lecture defines incomplete mediation as an application accepting incorrect data from the user or a compromised system component."
+    topic: "Program security flaws",
   },
   {
     question: "What is a TOCTTOU error?",
@@ -794,6 +904,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Time-of-check to time-of-use (TOCTTOU)",
     distractors: ["Buffer overflow", "Stealth virus", "Port scan"],
     explanation: "TOCTTOU is a race condition that exploits the time gap between a security check and later use."
+    topic: "Program security flaws",
   },
   {
     question: "What is black-box testing in the software-development controls section?",
@@ -801,6 +912,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Black-box testing",
     distractors: ["Clear-box testing", "Configuration management", "Hazard analysis"],
     explanation: "The slides define black-box testing as seeing only input and output."
+    topic: "Software-development controls",
   },
   {
     question: "What is Clear-Box testing in the lecture?",
@@ -808,6 +920,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Clear-Box testing",
     distractors: ["Black-box testing", "Spam filtering", "Access filtering"],
     explanation: "The slide calls the code-aware approach Clear-Box testing and says the tester can analyze code and develop scenarios."
+    topic: "Software-development controls",
   },
   {
     question: "Which operating-system protection measures are listed?",
@@ -815,6 +928,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Operating-system protection controls",
     distractors: ["Reconnaissance techniques", "Virus life-cycle phases", "Attack categories"],
     explanation: "The OS protection slide lists antivirus/endpoint protection, regular patches, firewall monitoring and least-privilege user controls."
+    topic: "Operating-system protection",
   },
   {
     question: "What does File Integrity Monitoring do in the database-security slides?",
@@ -822,6 +936,7 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "File Integrity Monitoring (FIM)",
     distractors: ["Ping sweep", "Port redirection", "Macro virus"],
     explanation: "The lecture says FIM can log database-server actions and alert about potential breaches."
+    topic: "Database security",
   },
   {
     question: "What is the role of a Web Application Firewall in the lecture?",
@@ -829,8 +944,586 @@ const chapter2Seeds: QuestionSeed[] = [
     answer: "Web Application Firewall (WAF)",
     distractors: ["Packet sniffer", "Boot-sector protection", "Ping sweep"],
     explanation: "The slides say a WAF operates at Layer 7 and can detect and block malicious web-application traffic such as SQL injection."
+    topic: "Database security",
   }
 ];
 
-export const chapter1QuizBank = buildBank("ias1", chapter1Seeds);
-export const chapter2QuizBank = buildBank("ias2", chapter2Seeds);
+
+
+const chapter1MoreSeeds: QuestionSeed[] = [
+  {
+    question: "Which three activities form the lecture's broad classification of protection?",
+    scenario: "A security plan includes measures to stop damage, discover incidents and restore assets afterward. Which three activities does the lecture use?",
+    answer: "Prevention, detection and reaction",
+    distractors: ["Authentication, authorization and accounting", "Interception, modification and fabrication", "Modularity, encapsulation and data hiding"],
+    explanation: "The slides group protection into prevention, detection and reaction.",
+    topic: "Protection activities"
+  },
+  {
+    question: "Which statement correctly distinguishes a threat from a vulnerability?",
+    scenario: "A company faces a possibility of data theft because it uses weak passwords. Which pairing is correct?",
+    answer: "Data theft is the threat; weak passwords are the vulnerability",
+    distractors: ["Weak passwords are the threat; data theft is the vulnerability", "Both are attacks", "Both are countermeasures"],
+    explanation: "A threat is a possible harmful event; a vulnerability is a weakness that makes harm easier.",
+    topic: "Threats, vulnerabilities & attacks"
+  },
+  {
+    question: "Which attacker group is described as including cybercriminals, hacktivists, terrorists and state-sponsored hackers?",
+    scenario: "A coordinated group of criminals and ideological actors launches attacks as an organized operation. Which category from the lecture best describes this group?",
+    answer: "Organized hackers",
+    distractors: ["Amateurs only", "White-hat testers", "Individual system administrators"],
+    explanation: "The slides list cybercriminals, hacktivists, terrorists and state-sponsored hackers under organized hackers.",
+    topic: "Attacker types"
+  },
+  {
+    question: "Which vulnerability comes from improper use of permissions?",
+    scenario: "A user account has more access rights than the user's role requires. Which weakness category does the lecture identify?",
+    answer: "Access-control problem",
+    distractors: ["Communication vulnerability", "Physical vulnerability", "Hardware design flaw only"],
+    explanation: "The lecture notes that many vulnerabilities are created by improper use of access controls.",
+    topic: "Security vulnerabilities"
+  },
+  {
+    question: "Which consequence involves a company's confidential designs becoming known to outsiders?",
+    scenario: "A breach exposes proprietary technology that competitors can now copy. Which Chapter 1 consequence is this?",
+    answer: "Technology leakage",
+    distractors: ["Improved availability", "Prevention", "Non-repudiation"],
+    explanation: "Technology leakage is one of the consequences listed in the Chapter 1 slides.",
+    topic: "Breach consequences"
+  },
+  {
+    question: "Which CIA objective is sometimes called secrecy or privacy?",
+    scenario: "A medical record should be viewed only by authorized staff. Which security objective is being protected?",
+    answer: "Confidentiality",
+    distractors: ["Integrity", "Availability", "Fabrication"],
+    explanation: "The lecture says confidentiality is sometimes called secrecy or privacy.",
+    topic: "CIA triad"
+  },
+  {
+    question: "Which CIA objective protects against both accidental and malicious alteration?",
+    scenario: "A message must not be changed, added to or deleted by an unauthorized party. Which objective applies?",
+    answer: "Integrity",
+    distractors: ["Availability", "Confidentiality", "Traffic analysis"],
+    explanation: "The slides say integrity protects messages from unauthorized modification, addition or deletion, whether malicious or accidental.",
+    topic: "CIA triad"
+  },
+  {
+    question: "A genuine user is identified before access rights are considered. Which requirement is being checked first?",
+    scenario: "A portal verifies a user's identity, then decides which pages the user may access. What is the first step?",
+    answer: "Authentication",
+    distractors: ["Authorization", "Non-repudiation", "Availability"],
+    explanation: "Authentication establishes the identity of a communicating party; authorization then assigns the rights that party has.",
+    topic: "Security requirements"
+  },
+  {
+    question: "Which security property is the main concern when a recipient needs proof that a sender issued a transaction instruction?",
+    scenario: "A bank wants evidence that a customer sent a particular funds-transfer request. Which requirement is most relevant?",
+    answer: "Non-repudiation",
+    distractors: ["Availability", "Traffic analysis", "Interruption"],
+    explanation: "Non-repudiation is intended to prevent a sender from later denying a message was sent.",
+    topic: "Security requirements"
+  },
+  {
+    question: "Which attack category is associated with inserting a false message?",
+    scenario: "An attacker creates a message that was never sent by the legitimate source and inserts it into the communication. Which category fits?",
+    answer: "Fabrication",
+    distractors: ["Interruption", "Interception", "Modification"],
+    explanation: "The lecture associates fabrication with an attack on authenticity.",
+    topic: "Attack categories"
+  },
+  {
+    question: "Why are passive attacks difficult to detect?",
+    scenario: "A network connection appears normal because the observer only listens and does not alter the messages. What makes this difficult to notice?",
+    answer: "The transmission appears normal and data is not altered",
+    distractors: ["The system always crashes immediately", "The attack necessarily deletes messages", "The attacker must become an administrator"],
+    explanation: "The slides say passive attacks are difficult to detect because message transmission appears normal and data is not changed.",
+    topic: "Passive attacks"
+  },
+  {
+    question: "Which pair contains the two passive attack types named in the lecture?",
+    scenario: "A learner must distinguish reading a message from studying communication patterns. Which pair names both passive attack types?",
+    answer: "Release of message contents and traffic analysis",
+    distractors: ["Masquerade and replay", "Port scan and ping sweep", "Modification and denial of service"],
+    explanation: "The lecture names release of message contents and traffic analysis as the two passive attack types.",
+    topic: "Passive attacks"
+  },
+  {
+    question: "Which active attack involves an attacker pretending to be another entity?",
+    scenario: "A system receives a request from someone who is impersonating a legitimate user. Which active attack is occurring?",
+    answer: "Masquerade",
+    distractors: ["Traffic analysis", "Release of message contents", "Ping sweep"],
+    explanation: "Masquerade is one of the four active attacks listed and involves one entity acting as another.",
+    topic: "Active attacks"
+  },
+  {
+    question: "Which active attack prevents the normal use of a target or network?",
+    scenario: "A user cannot access a normally available service because an attacker is disrupting it. Which active-attack category applies?",
+    answer: "Denial of service",
+    distractors: ["Replay", "Traffic analysis", "Release of message contents"],
+    explanation: "The active-attack list includes denial of service, which prevents normal use of a target or network.",
+    topic: "Active attacks"
+  },
+  {
+    question: "Which statement about an insider is consistent with the lecture?",
+    scenario: "A former employee still has an account and uses it to access company records. Why can this person be considered an insider?",
+    answer: "The person already has or had a legitimate relationship and access",
+    distractors: ["The person must be physically inside the building", "The person must be a state-sponsored hacker", "The person must use a packet sniffer"],
+    explanation: "The slides include current or former employees and others with existing privileges among possible internal attackers.",
+    topic: "Internal & external attacks"
+  },
+  {
+    question: "Which motivation is listed for internal attackers?",
+    scenario: "An employee misuses access because of revenge, financial gain, espionage or negligence. Which category of motivation does the lecture list?",
+    answer: "Disgruntlement, financial gain, espionage or accidental misuse",
+    distractors: ["Only improving security", "Only network redundancy", "Only key distribution"],
+    explanation: "The internal-attacker slide lists disgruntlement, financial gain, espionage and accidental misuse.",
+    topic: "Internal & external attacks"
+  },
+  {
+    question: "Which attack is listed at the data-link layer in the lecture table?",
+    scenario: "An exam question mentions MAC and IEEE 802.11 Wi-Fi traffic analysis or disruption. Which layer does the course table associate with these examples?",
+    answer: "Data-link layer",
+    distractors: ["Application layer", "Transport layer", "Network layer"],
+    explanation: "The slide's data-link row mentions traffic analysis and disruption, including MAC and IEEE 802.11 Wi-Fi.",
+    topic: "TCP/IP attack layers"
+  },
+  {
+    question: "Which TCP/IP layer is associated with SYN flooding in the lecture table?",
+    scenario: "A student is classifying SYN flooding among application, transport, network and data-link examples. Which choice follows the slide?",
+    answer: "Transport layer",
+    distractors: ["Application layer", "Network layer", "Data-link layer"],
+    explanation: "The Chapter 1 table lists SYN flooding at the transport layer.",
+    topic: "TCP/IP attack layers"
+  },
+  {
+    question: "Which countermeasure does the Chapter 1 slide pair with social problems?",
+    scenario: "An organization wants to reduce security incidents caused by human behavior and awareness gaps. Which countermeasure does the lecture list?",
+    answer: "Education",
+    distractors: ["Port redirection", "IP spoofing", "Key replay"],
+    explanation: "The countermeasure slide pairs social problems with education.",
+    topic: "Countermeasures"
+  },
+  {
+    question: "Which countermeasure is listed for denial-of-service attacks?",
+    scenario: "A network team wants controls specifically named in the lecture for reducing DoS activity. Which pair is listed?",
+    answer: "Access filtering and IDS",
+    distractors: ["SSL and HTTPS only", "Data hiding and encapsulation", "nslookup and ping"],
+    explanation: "The Chapter 1 countermeasures slide pairs denial of service with access filtering and IDS.",
+    topic: "Countermeasures"
+  },
+  {
+    question: "What travels through the insecure channel in the network-security model?",
+    scenario: "Two principals are exchanging information while an opponent may be present. Which object is being transferred through the channel?",
+    answer: "Information transformed using a security mechanism and suitable key information",
+    distractors: ["Only the trusted third party", "Only a firewall rule", "An operating-system patch"],
+    explanation: "The network-security model shows information travelling between principals over an insecure communications channel, using a suitable security transformation and keys.",
+    topic: "Network security model"
+  },
+  {
+    question: "Which item is a key-management requirement in the network-security model?",
+    scenario: "Two parties have selected an encryption algorithm but have not decided how to share the secret information. Which model task is incomplete?",
+    answer: "Developing a method to distribute and share the secret key",
+    distractors: ["Creating a new attack category", "Removing the communication protocol", "Disabling the recipient"],
+    explanation: "Key distribution and sharing is one of the four tasks listed for using the network-security model.",
+    topic: "Network security model"
+  },
+  {
+    question: "Which network-access control is shown as a gatekeeper-related measure?",
+    scenario: "A network diagram places access control and firewall/proxy servers between an opponent and an information system. What role do these controls serve?",
+    answer: "Controlling access into the information system",
+    distractors: ["Creating malware copies", "Replacing the database", "Performing virus execution"],
+    explanation: "The access-security diagram shows access control and firewall/proxy servers as controls protecting the access path.",
+    topic: "Network security model"
+  },
+  {
+    question: "What was one limitation of early computer security during World War II?",
+    scenario: "Sensitive military locations had physical access restrictions, but controls against theft, espionage and sabotage were rudimentary. Which period is described?",
+    answer: "The early mainframe and World War II era",
+    distractors: ["The 1990s Internet era", "The present cloud era", "The ARPANET 1970s era only"],
+    explanation: "The history slides describe early computing security as relying on physical controls with rudimentary defenses against theft, espionage and sabotage.",
+    topic: "History of information security"
+  },
+  {
+    question: "What changed in the 1990s according to the history slides?",
+    scenario: "Computer networks became common and interconnected, creating a global network of networks. Which development is being described?",
+    answer: "The Internet",
+    distractors: ["The first boot-sector virus", "The TCP three-way handshake", "The first Web Application Firewall"],
+    explanation: "The lecture says the growth and interconnection of computer networks resulted in the Internet as a global network of networks.",
+    topic: "History of information security"
+  }
+];
+
+const chapter2MoreSeeds: QuestionSeed[] = [
+  {
+    question: "Which classification question is answered by asking whether malware needs an actual application or system program to exist?",
+    scenario: "A malicious fragment cannot run on its own and must be part of another program. Which classification is being considered?",
+    answer: "Host-dependent versus independent",
+    distractors: ["Passive versus active", "Confidential versus public", "Internal versus external"],
+    explanation: "The lecture first classifies malicious software by whether it needs a host program or is an independent program.",
+    topic: "Malicious-code classifications"
+  },
+  {
+    question: "What is the difference between the two malicious-code classification schemes in the lecture?",
+    scenario: "A student is asked separately whether malware needs a host and whether it creates copies. Which statement is correct?",
+    answer: "Host dependence and replication are two different classification questions",
+    distractors: ["They are exactly the same classification", "Both only classify network attacks", "Both only describe virus execution"],
+    explanation: "The slides first classify host-dependent versus independent code, then separately classify non-replicating versus replicating threats.",
+    topic: "Malicious-code classifications"
+  },
+  {
+    question: "Which event may activate a virus from its dormant phase?",
+    scenario: "A virus remains idle until disk capacity exceeds a certain limit, then activates. Which phase transition is described?",
+    answer: "Activation from the dormant phase",
+    distractors: ["Propagation to execution", "Execution to propagation", "A firewall rule being installed"],
+    explanation: "The dormant phase may end when a trigger event occurs, such as a date, file/program presence or disk-capacity condition.",
+    topic: "Virus lifecycle"
+  },
+  {
+    question: "In which virus phase does the malicious function actually take place?",
+    scenario: "After copying itself and being activated, a virus finally deletes data files. Which phase performs that action?",
+    answer: "Execution phase",
+    distractors: ["Dormant phase", "Propagation phase", "Triggering phase"],
+    explanation: "The execution phase is when the virus performs its intended function.",
+    topic: "Virus lifecycle"
+  },
+  {
+    question: "Which virus type infects every program that executes after the virus has become resident in memory?",
+    scenario: "A virus is part of a resident system program and stays in main memory. Which type is it?",
+    answer: "Memory-resident virus",
+    distractors: ["Boot-sector virus", "Parasitic virus", "Stealth virus"],
+    explanation: "The lecture says a memory-resident virus stays in main memory and infects every program that executes from then on.",
+    topic: "Virus types"
+  },
+  {
+    question: "Which virus type is specifically designed to make antivirus detection difficult by hiding its presence?",
+    scenario: "An infected executable is manipulated to make it appear unchanged and avoid detection. Which general type from the slides is this?",
+    answer: "Stealth virus",
+    distractors: ["Parasitic virus", "Boot-sector virus", "Memory-resident virus"],
+    explanation: "A stealth virus is explicitly designed to hide from detection by antivirus software.",
+    topic: "Virus types"
+  },
+  {
+    question: "What is the key difference between polymorphic and metamorphic viruses?",
+    scenario: "One virus mutates its form, while another rewrites itself completely and may also change behavior. Which description identifies the metamorphic type?",
+    answer: "It rewrites itself completely at each iteration",
+    distractors: ["It only infects a boot record", "It requires a user to send an email", "It never changes"],
+    explanation: "The slides distinguish metamorphic viruses by complete rewriting and possible behavior changes, not simply mutation.",
+    topic: "Virus types"
+  },
+  {
+    question: "Which file type or content was central to the Melissa example?",
+    scenario: "A recipient opens an email attachment containing a Microsoft Word macro which activates and emails itself to contacts. Which mechanism is shown?",
+    answer: "A Word macro embedded in an email attachment",
+    distractors: ["A TCP SYN packet", "A broadcast ICMP request", "A database WAF rule"],
+    explanation: "The Melissa slide describes a Word macro embedded in an attachment that activated when opened.",
+    topic: "Macro & email viruses"
+  },
+  {
+    question: "Which behavior distinguishes a worm's spread from a virus's spread in the slides?",
+    scenario: "A malicious program spreads to other computers via a network without infecting another application. Which feature is being tested?",
+    answer: "A worm can replicate independently without a host program",
+    distractors: ["A worm must attach to an executable", "A worm only activates on a date", "A worm cannot replicate"],
+    explanation: "The lecture says worms are independent and do not need a host program to replicate between computers.",
+    topic: "Worms"
+  },
+  {
+    question: "Which two resources are specifically mentioned as being consumed by worms?",
+    scenario: "A worm makes computers slow by using up network capacity and system memory. Which pair does the lecture name?",
+    answer: "Memory and bandwidth",
+    distractors: ["Screen brightness and disk labels", "Passwords and encryption keys", "CPU fans and display pixels"],
+    explanation: "The worm slide names memory and bandwidth as system resources consumed by worms.",
+    topic: "Worms"
+  },
+  {
+    question: "Which of these is not one of the worm symptoms listed in the lecture?",
+    scenario: "A student is selecting a symptom that does not appear in the slide's list of worm symptoms. Which choice is not listed?",
+    answer: "A cryptographic digital signature appearing on every file",
+    distractors: ["Slow computer performance", "Emails sent without the user's knowledge", "Operating-system error messages"],
+    explanation: "The listed symptoms include slow performance, automatic programs, unexpected email, browser problems and system errors.",
+    topic: "Worms"
+  },
+  {
+    question: "Which condition can trigger a logic bomb according to the slide?",
+    scenario: "A hidden function activates only when a particular user runs the application. Which logic-bomb trigger is this?",
+    answer: "A particular user running the application",
+    distractors: ["A ping sweep discovering a host", "A password being salted", "A firewall inspecting traffic"],
+    explanation: "The slide lists a particular user running the application as a possible trigger.",
+    topic: "Logic bombs"
+  },
+  {
+    question: "Which action may a logic bomb perform after it is triggered?",
+    scenario: "A condition is met and embedded malicious code causes the machine to halt. Is this consistent with the lecture?",
+    answer: "Yes; a logic bomb may cause a machine halt",
+    distractors: ["No; logic bombs only display harmless messages", "No; logic bombs only scan open ports", "No; logic bombs only encrypt network traffic"],
+    explanation: "The logic-bomb slide says triggered code may alter or delete data, halt a machine or cause other damage.",
+    topic: "Logic bombs"
+  },
+  {
+    question: "Which Trojan classification is described as corrupting or deleting files?",
+    scenario: "A disguised program damages files on the victim's computer. Which category in the Trojan table fits?",
+    answer: "Destructive Trojan",
+    distractors: ["FTP Trojan", "Proxy Trojan", "Remote-access Trojan"],
+    explanation: "The Trojan classification table describes destructive Trojans as corrupting or deleting files.",
+    topic: "Trojan horses"
+  },
+  {
+    question: "Which Trojan classification uses the victim's machine to launch attacks?",
+    scenario: "A malicious program turns a compromised endpoint into the source device for other attacks. Which Trojan type is this?",
+    answer: "Proxy Trojan",
+    distractors: ["Data-sending Trojan", "FTP Trojan", "Security-software disabler"],
+    explanation: "A proxy Trojan uses the victim's computer as the source device for attacks and illegal activity.",
+    topic: "Trojan horses"
+  },
+  {
+    question: "Which Trojan classification slows or halts network activity?",
+    scenario: "A disguised program is installed and then disrupts network activity so users cannot use services normally. Which Trojan type matches?",
+    answer: "Denial-of-service Trojan",
+    distractors: ["Remote-access Trojan", "FTP Trojan", "Keylogger"],
+    explanation: "The Trojan table includes a DoS Trojan that slows or halts network activity.",
+    topic: "Trojan horses"
+  },
+  {
+    question: "Which statement about Trojan horses is directly stated in the lecture?",
+    scenario: "A disguised game damages a system after a user installs it. Does the Trojan need to copy itself like a virus to fit the lecture's definition?",
+    answer: "No; Trojan horses do not replicate themselves like viruses",
+    distractors: ["Yes; all Trojans must attach to executable files", "Yes; Trojans only spread through ping sweeps", "No; Trojans are always harmless"],
+    explanation: "The lecture explicitly states that Trojan horse programs do not replicate themselves like a virus.",
+    topic: "Trojan horses"
+  },
+  {
+    question: "Which spyware mechanism is specifically mentioned in the slide?",
+    scenario: "A monitoring program gathers information by observing cookies. Which malicious software topic does this relate to?",
+    answer: "Spyware",
+    distractors: ["Buffer overflow", "TCP SYN flooding", "Port redirection"],
+    explanation: "The spyware slide says some spyware operates through monitoring cookies.",
+    topic: "Spyware"
+  },
+  {
+    question: "Which item is not listed as information gathered by spyware in the lecture?",
+    scenario: "An exam asks which item is outside the slide's examples of spyware-collected information. Which one is it?",
+    answer: "The physical weight of the computer",
+    distractors: ["Websites visited", "Browser and system information", "Computer IP address"],
+    explanation: "The slide lists websites visited, browser/system information and the computer IP address.",
+    topic: "Spyware"
+  },
+  {
+    question: "Why do the slides mention Bitcoin in the ransomware section?",
+    scenario: "A ransomware attacker demands payment and uses a payment method whose users may remain anonymous. Which payment method does the lecture mention?",
+    answer: "Bitcoin",
+    distractors: ["A MAC address", "An ICMP echo reply", "A DNS hostname"],
+    explanation: "The slides state that ransomware payments are typically paid in Bitcoin because users can remain anonymous.",
+    topic: "Ransomware"
+  },
+  {
+    question: "What is malvertising in the ransomware slides?",
+    scenario: "A ransomware campaign uses malicious advertising as a way to reach victims. Which term names this vector?",
+    answer: "Malvertising",
+    distractors: ["Traffic analysis", "Port redirection", "Encapsulation"],
+    explanation: "The lecture refers to malicious advertising as malvertising and lists it as a ransomware campaign vector.",
+    topic: "Ransomware"
+  },
+  {
+    question: "Which source of email addresses is mentioned under spam?",
+    scenario: "A spammer searches websites to collect addresses for unwanted messages. Which collection method is listed?",
+    answer: "Web search",
+    distractors: ["Hash salting", "TCP intercept", "Peer review"],
+    explanation: "The spam slide lists web search, sending test emails, and buying or exchanging addresses as ways spammers get email addresses.",
+    topic: "Spam"
+  },
+  {
+    question: "Which action should a user avoid when receiving junk email?",
+    scenario: "A suspicious message includes an executable attachment. What does the lecture advise?",
+    answer: "Do not open the file or executable attachment",
+    distractors: ["Run the file to inspect it", "Reply to the sender", "Publish the email address"],
+    explanation: "The slides advise users not to open files or executable attachments in junk email.",
+    topic: "Spam"
+  },
+  {
+    question: "Which reconnaissance method captures network traffic for decoding and analysis?",
+    scenario: "An administrator uses Wireshark to capture packets and inspect their contents. Which technique is in use?",
+    answer: "Packet sniffing",
+    distractors: ["Ping sweep", "Port redirection", "SYN flood"],
+    explanation: "The lecture describes packet sniffers as tools that capture network traffic for decoding and analysis, and names Wireshark.",
+    topic: "Reconnaissance attacks"
+  },
+  {
+    question: "What is the purpose of a port scan?",
+    scenario: "An attacker surveys a host to learn which ports are open and which applications may be associated with them. Which reconnaissance technique is this?",
+    answer: "Port scanning",
+    distractors: ["Traffic analysis", "Password salting", "Logic-bomb triggering"],
+    explanation: "A port scanner surveys a host network for open ports; ports are associated with applications.",
+    topic: "Reconnaissance attacks"
+  },
+  {
+    question: "What does an information query such as nslookup resolve?",
+    scenario: "A technician has a hostname and wants its corresponding IP address, or the reverse. Which reconnaissance subcategory is being used?",
+    answer: "Information queries",
+    distractors: ["Port redirection", "Trust exploitation", "DoS amplification"],
+    explanation: "The slide says information queries resolve hostnames from IP addresses or vice versa.",
+    topic: "Reconnaissance attacks"
+  },
+  {
+    question: "Which reconnaissance technique sends echo requests to several host IP addresses?",
+    scenario: "A tool checks multiple IP addresses and looks for echo replies. Which technique is this?",
+    answer: "Ping sweep",
+    distractors: ["Packet sniffing", "Man-in-the-middle", "Keylogging"],
+    explanation: "Ping sweeps send ICMP echo requests to numerous host addresses to find those that respond.",
+    topic: "Reconnaissance attacks"
+  },
+  {
+    question: "What can an attacker do after cracking a router or switch password, according to the slides?",
+    scenario: "An attacker obtains a device password and changes network settings so traffic is redirected to another computer. Which access method enabled this?",
+    answer: "Password attack",
+    distractors: ["Traffic analysis", "Logic bomb", "Buffer overflow"],
+    explanation: "The slides say cracked router or switch passwords can let attackers change configurations, take down a network or redirect traffic.",
+    topic: "Access attacks"
+  },
+  {
+    question: "What is the primary effect of privilege elevation in trust exploitation?",
+    scenario: "A user with limited access exploits an application and obtains administrator rights. What has the attacker achieved?",
+    answer: "Higher privileges than originally authorized",
+    distractors: ["A lower network bandwidth", "A new virus lifecycle phase", "A successful database backup"],
+    explanation: "Trust exploitation is described as elevating an attacker's privileges, such as moving from limited access to administrator access.",
+    topic: "Access attacks"
+  },
+  {
+    question: "Which control may normally deny traffic through a particular port, according to the port-redirection slide?",
+    scenario: "An attacker uses a compromised internal host to tunnel traffic through a port that would normally be blocked. Which control's restriction is being bypassed?",
+    answer: "Firewall or access control list (ACL)",
+    distractors: ["Virus signature database", "File Integrity Monitoring only", "Email mailing list"],
+    explanation: "The port-redirection slide describes traffic passing through a firewall or ACL port that normally denies it.",
+    topic: "Access attacks"
+  },
+  {
+    question: "What is the attacker's position in a man-in-the-middle attack?",
+    scenario: "Two legitimate parties believe they are communicating directly, but an attacker is placed in the communication path. Where is the attacker?",
+    answer: "Between the two communicating entities",
+    distractors: ["Only inside the recipient's hard disk", "Only at the DNS root", "Outside all communication paths"],
+    explanation: "The slides define a man-in-the-middle attack as placing the attacker in the middle of communication between two legitimate entities.",
+    topic: "Access attacks"
+  },
+  {
+    question: "What are compromised systems used in a DDoS commonly called in the slides?",
+    scenario: "Many infected devices are coordinated to send a flood of requests to one target. What names does the lecture give these devices?",
+    answer: "Zombies or slaves",
+    distractors: ["Principals or trusted parties", "Buffers or arrays", "Gatekeepers or proxies"],
+    explanation: "The DDoS slide calls the compromised systems zombies or slaves.",
+    topic: "Denial-of-service attacks"
+  },
+  {
+    question: "What does the attacker fail to send in the TCP SYN attack described in the lecture?",
+    scenario: "The target sends a SYN-ACK in response to a SYN request, but the attacking system does not complete the handshake. Which packet is missing?",
+    answer: "The final ACK",
+    distractors: ["The first SYN", "The target's SYN-ACK", "An ICMP broadcast request"],
+    explanation: "The slides say the attacker does not ACK the resulting SYN-ACK, causing connection queues to fill.",
+    topic: "Denial-of-service attacks"
+  },
+  {
+    question: "Which router feature is named as a control against TCP SYN attacks?",
+    scenario: "A router terminates sessions that have not been established within an allotted time. Which feature is configured?",
+    answer: "TCP intercept",
+    distractors: ["nslookup", "Wireshark", "File Integrity Monitoring"],
+    explanation: "The lecture says TCP intercept can be configured on a router to terminate sessions that are not established within an allotted time.",
+    topic: "Denial-of-service attacks"
+  },
+  {
+    question: "What is a software error in the IEEE Standard 729 terms shown in the lecture?",
+    scenario: "A programmer makes a human mistake while specifying or coding a program. Which term does the slide use?",
+    answer: "Error",
+    distractors: ["Fault", "Failure", "Vulnerability"],
+    explanation: "The slide defines an error as a human mistake in a software-related activity such as specification or coding.",
+    topic: "Program security flaws"
+  },
+  {
+    question: "What is a software fault in the IEEE Standard 729 terms shown in the lecture?",
+    scenario: "A program contains an incorrect command or data definition. Which term does the lecture use?",
+    answer: "Fault",
+    distractors: ["Error", "Failure", "Threat"],
+    explanation: "The slides define a fault as an incorrect step, command, process or data definition in software.",
+    topic: "Program security flaws"
+  },
+  {
+    question: "What is a software failure in the lecture's terminology?",
+    scenario: "A program behaves differently from the system's desired behavior. Which term is this?",
+    answer: "Failure",
+    distractors: ["Error", "Fault", "Patch"],
+    explanation: "The slides define failure as a departure from the system's desired behavior.",
+    topic: "Program security flaws"
+  },
+  {
+    question: "Which is listed as a malicious program flaw rather than a non-malicious flaw?",
+    scenario: "A programmer deliberately inserts a hidden access path into a program. Which malicious flaw from the slide is illustrated?",
+    answer: "Trapdoor",
+    distractors: ["Buffer overflow", "Incomplete mediation", "TOCTTOU"],
+    explanation: "The malicious-flaw list includes virus, worm, rabbit, Trojan horse, trapdoor, logic bomb and time bomb.",
+    topic: "Program security flaws"
+  },
+  {
+    question: "Which software-engineering principle makes software easier to review and test?",
+    scenario: "A team divides a system into separate, manageable components so reviewers can test them more easily. Which principle is this?",
+    answer: "Modularity",
+    distractors: ["Data hiding", "Traffic analysis", "Port redirection"],
+    explanation: "The software-development slide says modularity makes software easier to review and test.",
+    topic: "Software-development controls"
+  },
+  {
+    question: "What does encapsulation mean in the lecture's software-development controls?",
+    scenario: "A software component exposes only well-defined interfaces to other components. Which principle is being applied?",
+    answer: "Encapsulation",
+    distractors: ["Port scanning", "Interception", "Replication"],
+    explanation: "The slide describes encapsulation as ensuring that only well-defined interfaces are known.",
+    topic: "Software-development controls"
+  },
+  {
+    question: "Which testing type gives the tester visibility into code and allows code-based scenarios?",
+    scenario: "A tester inspects source code and develops scenarios from the program's internal logic. Which term is used in the lecture?",
+    answer: "Clear-Box testing",
+    distractors: ["Black-Box testing", "Ping testing", "Configuration management"],
+    explanation: "The slide calls code-aware testing Clear-Box testing and says the tester can analyze code and develop scenarios.",
+    topic: "Software-development controls"
+  },
+  {
+    question: "Which administrative control divides responsibilities so one person does not control every step?",
+    scenario: "One employee prepares a change and another approves it. Which administrative control does this represent?",
+    answer: "Separation of duties",
+    distractors: ["Traffic analysis", "Buffer allocation", "Port scanning"],
+    explanation: "The administrative-controls slide lists enforcing standards and separation of duties.",
+    topic: "Software-development controls"
+  },
+  {
+    question: "Which operating-system protection technique is specifically intended to address known software weaknesses?",
+    scenario: "An administrator applies current OS updates and critical fixes. Which measure from the lecture is being used?",
+    answer: "Regular OS patch updates",
+    distractors: ["Ping sweeps", "Traffic analysis", "Data deduplication"],
+    explanation: "The operating-system protection slide lists regular OS patch updates.",
+    topic: "Operating-system protection"
+  },
+  {
+    question: "When should database user accounts be reviewed or deactivated according to the lecture?",
+    scenario: "An employee leaves the company and no longer needs database access. What should the organization do?",
+    answer: "Review the account and deactivate it or remove unneeded access",
+    distractors: ["Keep it active indefinitely", "Publish the password hash", "Move backups to a public folder"],
+    explanation: "The slides say to review accounts regularly and deactivate them when staff leave or no longer need the same access level.",
+    topic: "Database security"
+  },
+  {
+    question: "How often does the database-security slide recommend penetration testing for a critical database system?",
+    scenario: "A security manager is planning the minimum review interval specified in the lecture. What interval is stated?",
+    answer: "At least once per year",
+    distractors: ["Once every ten years", "Only after a breach", "Every day"],
+    explanation: "The slides recommend running a penetration test on a critical database system at least once per year.",
+    topic: "Database security"
+  },
+  {
+    question: "Where should database backups not be left, according to the slides?",
+    scenario: "An administrator plans to store backups in a public web folder or unsecured cloud bucket. Is this consistent with the lecture's advice?",
+    answer: "No; backups should not be placed in publicly accessible or unsecured locations",
+    distractors: ["Yes; backups should always be public", "Yes; encryption is unnecessary", "No; backups should be deleted immediately"],
+    explanation: "The database-security slides warn against publicly accessible temporary partitions, web folders and unsecured cloud storage buckets.",
+    topic: "Database security"
+  }
+];
+
+
+export const chapter1QuizBank = [...buildBank("ias1", chapter1Seeds), ...buildBank("ias1x", chapter1MoreSeeds)];
+export const chapter2QuizBank = [...buildBank("ias2", chapter2Seeds), ...buildBank("ias2x", chapter2MoreSeeds)];
