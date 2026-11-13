@@ -5036,3 +5036,207 @@ button:focus-visible {
   padding-top: clamp(28px, 6vh, 70px);
   padding-bottom: clamp(28px, 6vh, 70px);
 }
+
+
+/* Chapter navigation stays available while reading so every learning mode is easy to reach. */
+.ias-study-tabs.compact.reader-tabs {
+  position: sticky;
+  top: 8px;
+  z-index: 30;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto 10px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 9px 24px rgba(24, 29, 56, 0.09);
+}
+
+.reader-experience .reader-topic-overview .study-inline-highlight {
+  color: #4f55a8;
+}
+
+/* True black theme: neutral monochrome surfaces, not navy or blue-black. */
+.theme-dark {
+  color-scheme: dark;
+  background: #000 !important;
+  color: #f4f4f4;
+}
+
+.theme-dark,
+.theme-dark .page-content,
+.theme-dark .course-page {
+  background-color: #000;
+}
+
+.theme-dark .site-header {
+  border-bottom-color: #242424;
+}
+
+.theme-dark .course-card,
+.theme-dark .course-summary-card,
+.theme-dark .chapter-choice-card,
+.theme-dark .ias-study-tabs,
+.theme-dark .ias-study-tabs.compact,
+.theme-dark .assessment-setup,
+.theme-dark .assessment-session,
+.theme-dark .assessment-result,
+.theme-dark .short-note-card,
+.theme-dark .summary-list,
+.theme-dark .scenario-sidebar,
+.theme-dark .scenario-workbench,
+.theme-dark .study-topic-card {
+  border-color: #292929;
+  background: #090909;
+  color: #f2f2f2;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.55);
+}
+
+.theme-dark .reader-experience,
+.theme-dark .reader-experience.tone-paper,
+.theme-dark .reader-experience.tone-mist,
+.theme-dark .reader-experience.tone-lilac,
+.theme-dark .reader-experience.tone-sage {
+  background: #050505;
+  border-color: #2a2a2a;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.65);
+}
+
+.theme-dark .reader-topic-card,
+.theme-dark .study-topic-card,
+.theme-dark .study-topic-card[open] {
+  border-color: #303030;
+  background: #101010;
+}
+
+.theme-dark .course-card h3,
+.theme-dark .course-summary-title h1,
+.theme-dark .chapter-choice-card h3,
+.theme-dark .topic-group-heading h2,
+.theme-dark .workspace-title-copy h1,
+.theme-dark .reader-topic-card h1,
+.theme-dark .reader-context > strong,
+.theme-dark .reader-key-points h2,
+.theme-dark .topic-title-wrap strong,
+.theme-dark .summary-row strong,
+.theme-dark .assessment-setup-hero h2,
+.theme-dark .assessment-result-top h2 {
+  color: #f5f5f5;
+}
+
+.theme-dark .course-summary-title p,
+.theme-dark .chapter-choice-card p,
+.theme-dark .workspace-title-copy p,
+.theme-dark .topic-title-wrap small,
+.theme-dark .topic-overview,
+.theme-dark .reader-topic-overview,
+.theme-dark .reader-key-points li,
+.theme-dark .short-note-card p,
+.theme-dark .short-note-card ul,
+.theme-dark .summary-row p,
+.theme-dark .topic-details,
+.theme-dark .topic-details p,
+.theme-dark .topic-details li {
+  color: #c9c9c9;
+}
+
+.theme-dark .course-summary-exam,
+.theme-dark .reader-topbar {
+  border-color: #292929;
+}
+
+.theme-dark .ias-study-tab {
+  color: #bcbcbc;
+}
+
+.theme-dark .ias-study-tab:hover,
+.theme-dark .ias-study-tab.active {
+  color: #fff;
+  background: #252525;
+  box-shadow: inset 0 0 0 1px #444;
+}
+
+.theme-dark .reader-exit-button,
+.theme-dark .reader-icon-button,
+.theme-dark .reader-font-control,
+.theme-dark .reader-color-choices,
+.theme-dark .reader-nav-button {
+  border-color: #383838;
+  color: #e3e3e3;
+  background: #151515;
+}
+
+.theme-dark .reader-font-control > span,
+.theme-dark .reader-nav-button strong,
+.theme-dark .study-workspace-context strong {
+  color: #ededed;
+}
+
+.theme-dark .reader-context > span,
+.theme-dark .reader-topic-kicker,
+.theme-dark .reader-progress-row,
+.theme-dark .reader-nav-button small {
+  color: #a7a7a7;
+}
+
+.theme-dark .reader-example {
+  border-color: #4a402e;
+  background: #19150f;
+}
+
+.theme-dark .reader-example > span { color: #e4c58c; }
+.theme-dark .reader-example p { color: #f0e4ce; }
+
+.theme-dark .reader-concept-note {
+  border-color: #45416a;
+  background: #151321;
+}
+
+.theme-dark .reader-concept-note strong,
+.theme-dark .reader-concept-note p {
+  color: #e0dcff;
+}
+
+/* Important vocabulary remains high-contrast against black backgrounds. */
+.theme-dark .study-inline-highlight,
+.theme-dark .topic-title-wrap .study-inline-highlight,
+.theme-dark .reader-topic-overview .study-inline-highlight,
+.theme-dark .reader-key-points .study-inline-highlight,
+.theme-dark .topic-details .study-inline-highlight {
+  color: #fff !important;
+  background: linear-gradient(180deg, transparent 34%, rgba(110, 91, 220, 0.72) 34%);
+  text-decoration-color: #d8d1ff;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.theme-dark .topic-example .study-inline-highlight,
+.theme-dark .reader-example .study-inline-highlight {
+  color: #fff3d4 !important;
+  background: linear-gradient(180deg, transparent 34%, rgba(143, 103, 35, 0.75) 34%);
+  text-decoration-color: #f1d9a7;
+}
+
+.theme-dark .topic-example,
+.theme-dark .reader-example {
+  background: #17130e;
+  border-color: #53442b;
+}
+
+.theme-dark .topic-exam-focus {
+  border-color: #403d60;
+  background: #141321;
+}
+
+.theme-dark .topic-exam-focus .handwritten-focus { color: #ddd9ff; }
+
+@media (max-width: 760px) {
+  .ias-study-tabs.compact.reader-tabs {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 430px) {
+  .ias-study-tabs.compact.reader-tabs .ias-study-tab {
+    padding: 0 8px;
+  }
+}
