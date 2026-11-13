@@ -181,10 +181,15 @@ function randomQuestions(bank: QuizQuestion[], count: number): QuizQuestion[] {
     .slice(0, Math.min(count, bank.length))
     .map((question) => {
       const correctAnswer = question.options[question.answerIndex];
-      const options = shuffleArray(question.options);
+      const pairedOptions = shuffleArray(question.options.map((option, index) => ({
+        option,
+        explanation: question.optionExplanations[index],
+      })));
+      const options = pairedOptions.map((item) => item.option);
       return {
         ...question,
         options,
+        optionExplanations: pairedOptions.map((item) => item.explanation),
         answerIndex: options.indexOf(correctAnswer),
       };
     });
@@ -551,6 +556,36 @@ function QuestionCountPicker({
   );
 }
 
+function OptionExplanationList({
+  question,
+  selectedIndex,
+}: {
+  question: QuizQuestion;
+  selectedIndex: number;
+}) {
+  return (
+    <div className="option-explanation-list">
+      <span className="option-explanation-kicker">WHY EACH OPTION FITS OR DOESN'T</span>
+      {question.options.map((option, index) => {
+        const isCorrect = index === question.answerIndex;
+        const isSelected = index === selectedIndex;
+        const status = isCorrect ? "correct" : isSelected ? "chosen" : "not-answer";
+        const statusLabel = isCorrect ? "Correct answer" : isSelected ? "Your selection" : "Not the answer";
+        return (
+          <article className={`option-explanation-item ${status}`} key={`${question.id}-option-${index}`}>
+            <div className="option-explanation-top">
+              <span className="option-explanation-letter">{String.fromCharCode(65 + index)}</span>
+              <strong><HighlightedText text={option} /></strong>
+              <small>{statusLabel}</small>
+            </div>
+            <p><HighlightedText text={question.optionExplanations[index] || "This choice does not match the defining condition in the question."} /></p>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
 function AssessmentSession({
   session,
   onRetake,
@@ -674,8 +709,12 @@ function AssessmentSession({
                   <small>QUESTION {index + 1} · {question.topic}</small>
                   <h4>{question.question}</h4>
                   <p><strong>Your answer:</strong> {answers[index] >= 0 ? question.options[answers[index]] : "Not answered"}</p>
-                  {!isCorrect && <p><strong>Correct answer:</strong> {question.options[question.answerIndex]}</p>}
-                  <p className="answer-explanation">{question.explanation}</p>
+                  {!isCorrect && <p><strong>Correct answer:</strong> {question.options[question.answerIndex]}</p>
+                  <p className="answer-explanation"><HighlightedText text={question.explanation} /></p>
+                  <details className="answer-review-options">
+                    <summary>Review why every option fits or does not fit</summary>
+                    <OptionExplanationList question={question} selectedIndex={answers[index] ?? -1} />
+                  </details>
                 </div>
               </article>
             );
@@ -691,7 +730,7 @@ function AssessmentSession({
         <div>
           <span className="eyebrow">{session.mode === "exam" ? "ASSESSMENT MODE" : "PRACTICE MODE"}</span>
           <h2>{session.mode === "exam" ? "Chapter exam" : "Question practice"}</h2>
-          <p>{session.mode === "exam" ? "Complete every question. Your score and explanations appear at the end." : "Choose an answer to see immediate feedback and a short explanation."}</p>
+          <p>Choose an answer to reveal the correct response, a clear explanation and why the other choices do not fit. Your final score appears at the end.</p>
         </div>
         <button className="quiet-icon-button" onClick={onExit} aria-label="Exit assessment"><ArrowLeft size={18} /></button>
       </div>
@@ -708,13 +747,11 @@ function AssessmentSession({
             const isCorrect = optionIndex === currentQuestion.answerIndex;
             const stateClass = currentAnswer === -1
               ? ""
-              : session.mode === "quiz" && isCorrect
+              : isCorrect
                 ? " correct"
-                : session.mode === "quiz" && isSelected
+                : isSelected
                   ? " incorrect"
-                  : isSelected
-                    ? " selected"
-                    : "";
+                  : " revealed";
             return (
               <button
                 key={option}
@@ -725,15 +762,23 @@ function AssessmentSession({
               >
                 <span>{String.fromCharCode(65 + optionIndex)}</span>
                 <strong>{option}</strong>
-                {session.mode === "quiz" && currentAnswer !== -1 && isCorrect && <CheckCircle2 size={17} />}
+                {currentAnswer !== -1 && isCorrect && <CheckCircle2 size={17} />}
+                {currentAnswer !== -1 && isSelected && !isCorrect && <span className="assessment-option-cross">×</span>}
               </button>
             );
           })}
         </div>
-        {session.mode === "quiz" && currentAnswer !== -1 && (
+        {currentAnswer !== -1 && (
           <div className={`instant-feedback ${currentAnswer === currentQuestion.answerIndex ? "correct" : "incorrect"}`}>
-            <strong>{currentAnswer === currentQuestion.answerIndex ? "Correct answer." : "Not quite — review this point."}</strong>
-            <p>{currentQuestion.explanation}</p>
+            <div className="instant-feedback-summary">
+              <div><span>YOUR ANSWER</span><strong><HighlightedText text={currentQuestion.options[currentAnswer]} /></strong></div>
+              <div><span>CORRECT ANSWER</span><strong><HighlightedText text={currentQuestion.options[currentQuestion.answerIndex]} /></strong></div>
+            </div>
+            <div className="instant-feedback-core">
+              <span className="option-explanation-kicker">WHY THE CORRECT ANSWER FITS</span>
+              <p><HighlightedText text={currentQuestion.explanation} /></p>
+            </div>
+            <OptionExplanationList question={currentQuestion} selectedIndex={currentAnswer} />
           </div>
         )}
       </div>
@@ -775,7 +820,7 @@ function AssessmentSetup({
         <div>
           <span className="eyebrow">{isExam ? "TEST YOUR UNDERSTANDING" : "BUILD YOUR CONFIDENCE"}</span>
           <h2>{isExam ? "Take an exam" : "Create a practice quiz"}</h2>
-          <p>{isExam ? "A complete assessment with results and explanations after the final question." : "Pick your question count. Questions and answer positions are shuffled for every new attempt."}</p>
+          <p>Choose your question count. Each answer is checked immediately, with a full explanation before you continue. Your score and topic review appear at the end.</p>
         </div>
       </div>
 
@@ -961,7 +1006,7 @@ function ChapterWorkspace({
         {activeTab === "interactive" && <InteractiveStudyView chapters={chapterGroups} />}
         {activeTab === "quizzes" && (
           session ? (
-            <AssessmentSession session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
+            <AssessmentSession key={session.questions.map((question) => question.id).join("|")} session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
           ) : (
             <AssessmentSetup
               mode="quiz"
