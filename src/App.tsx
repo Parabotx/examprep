@@ -976,7 +976,7 @@ function ChapterWorkspace({
         )}
         {activeTab === "exam" && (
           session ? (
-            <AssessmentSession session={session} onRetake={retake} onExit={() => setSession(null)} />
+            <AssessmentSession session={session} onRetake={retake} onExit={() => setSession(null)} onPracticeTopics={practiceWeakTopics} />
           ) : (
             <AssessmentSetup
               mode="exam"
