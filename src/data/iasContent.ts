@@ -382,7 +382,7 @@ export const chapter1: ChapterLearningContent = {
   shortNotes: chapter1Short,
   summary: chapter1Summary,
   interactive: chapter1Interactive,
-  quizzes: []
+  quizzes: chapter1QuizBank
 };
 
 const chapter2Notes: StudyTopic[] = [
@@ -880,7 +880,7 @@ export const chapter2: ChapterLearningContent = {
   shortNotes: chapter2Short,
   summary: chapter2Summary,
   interactive: chapter2Interactive,
-  quizzes: []
+  quizzes: chapter2QuizBank
 };
 
 export const chapterMap = {
