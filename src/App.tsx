@@ -152,13 +152,27 @@ function quizBankFor(scope: StudyScope): QuizQuestion[] {
   return [...chapter1QuizBank, ...chapter2QuizBank];
 }
 
-function randomQuestions(bank: QuizQuestion[], count: number): QuizQuestion[] {
-  const shuffled = [...bank];
+function shuffleArray<T>(items: T[]): T[] {
+  const shuffled = [...items];
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
     const swapIndex = Math.floor(Math.random() * (index + 1));
     [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
   }
-  return shuffled.slice(0, Math.min(count, shuffled.length));
+  return shuffled;
+}
+
+function randomQuestions(bank: QuizQuestion[], count: number): QuizQuestion[] {
+  return shuffleArray(bank)
+    .slice(0, Math.min(count, bank.length))
+    .map((question) => {
+      const correctAnswer = question.options[question.answerIndex];
+      const options = shuffleArray(question.options);
+      return {
+        ...question,
+        options,
+        answerIndex: options.indexOf(correctAnswer),
+      };
+    });
 }
 
 function EmptyState({
