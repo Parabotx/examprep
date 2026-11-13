@@ -721,7 +721,7 @@ const chapter2Notes: StudyTopic[] = [
       "The operating-system security-interface quiz asks about the reference monitor, Trusted Computing Base, time separation and security kernel; the deck does not mark an answer on that slide.",
       "The employee-termination question gives a scenario about disabling network access just before informing the employee; it is presented as a multiple-choice question without an answer marked in the deck."
     ],
-    examFocus: "For the two final unmarked quiz slides, do not assume an answer from the PDF: review the underlying concepts and check the instructor's expected answer."
+    examFocus: "The two final multiple-choice slides do not mark a correct option. The lecture therefore supports explaining the related security concepts, but it does not support assigning a definite answer to those two questions."
   }
 ];
 
