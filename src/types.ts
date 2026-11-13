@@ -8,31 +8,63 @@ export type CourseId =
 export interface ExamCourse {
   id: CourseId;
   title: string;
-  /** An absolute ISO timestamp. All exam times are stored as 08:00 in Ethiopia (UTC+3). */
+  /** An absolute ISO timestamp. All exam times are stored at 08:00 Ethiopia time (UTC+3). */
   examAt: string;
 }
 
-export interface NoteSection {
+export interface StudyTopic {
   title: string;
-  body: string;
+  overview: string;
+  keyPoints: string[];
+  example?: string;
+  examFocus?: string;
 }
 
-export interface SummarySection {
+export interface SummaryTopic {
   title: string;
-  points: string[];
+  description: string;
 }
 
 export interface QuizQuestion {
+  id: string;
   question: string;
   options: string[];
   answerIndex: number;
-  explanation?: string;
+  explanation: string;
 }
 
-export interface CourseStudyContent {
-  shortNotes: NoteSection[];
-  summary: SummarySection[];
+export interface InteractiveScenario {
+  id: string;
+  title: string;
+  situation: string;
+  question: string;
+  options: string[];
+  answerIndex: number;
+  explanation: string;
+  takeaway: string;
+}
+
+export interface ChapterLearningContent {
+  id: "chapter1" | "chapter2";
+  title: string;
+  subtitle: string;
+  studyNotes: StudyTopic[];
+  shortNotes: StudyTopic[];
+  summary: SummaryTopic[];
+  interactive: InteractiveScenario[];
   quizzes: QuizQuestion[];
 }
 
-export type StudyTab = "exam" | "notes" | "summary" | "quizzes";
+export interface CourseStudyContent {
+  shortNotes: StudyTopic[];
+  summary: SummaryTopic[];
+  quizzes: QuizQuestion[];
+}
+
+export type StudyTab =
+  | "study-notes"
+  | "short-notes"
+  | "summary"
+  | "interactive"
+  | "quizzes"
+  | "exam";
