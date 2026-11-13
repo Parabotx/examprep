@@ -9,7 +9,6 @@ import {
   FileText,
   GraduationCap,
   Layers3,
-  ListChecks,
   Sparkles,
 } from "lucide-react";
 import { courses } from "./data/courses";
@@ -125,13 +124,7 @@ function EmptyState({
 }
 
 
-function QuizSession({
-  courseId,
-  questions,
-}: {
-  courseId: CourseId;
-  questions: QuizQuestion[];
-}) {
+function QuizSession({ questions }: { questions: QuizQuestion[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [score, setScore] = useState(0);
@@ -289,7 +282,7 @@ function CourseResources({ courseId, tab }: { courseId: CourseId; tab: StudyTab 
       );
     }
 
-    return <QuizSession key={courseId} courseId={courseId} questions={content.quizzes} />;
+    return <QuizSession key={courseId} questions={content.quizzes} />;
   }
 
   return null;
